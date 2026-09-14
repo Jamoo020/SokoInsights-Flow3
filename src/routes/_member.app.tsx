@@ -5,6 +5,7 @@ import { SurveyCard } from "@/components/survey-card";
 import { SurveyRunner } from "@/components/survey-runner";
 import { Action, Panel, Pill } from "@/components/ui-kit";
 import {
+  CATEGORY_LABELS,
   ksh,
   MEMBERSHIP_ACTIVATION_PRICE,
   SURVEYS,
