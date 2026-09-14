@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Action } from "@/components/ui-kit";
-import { CATEGORY_LABELS, ksh, QUESTION_REWARD, type Survey } from "@/lib/data";
+import { CATEGORY_LABELS, ksh, type Survey } from "@/lib/data";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -41,7 +41,7 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
     confirmQuestion(survey, question.id);
     setConfirmation({ questionNumber: step + 1, total });
     toast.success("Reward confirmed", {
-      description: `+${ksh(QUESTION_REWARD)} added to your earnings.`,
+      description: `+${ksh(survey.rewardPerQuestion)} added to your earnings.`,
     });
   };
 
@@ -65,7 +65,7 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
             {survey.title}
           </DialogTitle>
           <DialogDescription>
-            {survey.brand} · {CATEGORY_LABELS[survey.category]}
+            {CATEGORY_LABELS[survey.category]} · Opinion research
           </DialogDescription>
         </DialogHeader>
 
@@ -77,11 +77,11 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
             <p className="mt-4 text-lg font-extrabold text-ink">Task completed</p>
             <p className="mt-1 text-sm text-muted-foreground">{total} questions answered</p>
             <p className="mt-3 text-2xl font-extrabold text-accent-foreground">
-              {ksh(total * QUESTION_REWARD)} confirmed
+              {ksh(total * survey.rewardPerQuestion)} confirmed
             </p>
             <p className="mt-2 text-sm font-semibold text-muted-foreground">Status: Processing</p>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Your {ksh(total * QUESTION_REWARD)} reward has been confirmed and will become eligible
+              Your {ksh(total * survey.rewardPerQuestion)} reward has been confirmed and will become eligible
               within 48 hours.
             </p>
             <div className="mt-6">
@@ -97,9 +97,9 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
             </span>
             <p className="mt-4 text-lg font-extrabold text-ink">Reward confirmed</p>
             <p className="mt-2 text-3xl font-extrabold text-accent-foreground">
-              +{ksh(QUESTION_REWARD)}
+              +{ksh(survey.rewardPerQuestion)}
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">Added to your earnings.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Added to your earnings.</p>
             <p className="mt-4 text-sm font-semibold text-ink">
               Processing — eligible within 48 hours
             </p>
@@ -129,8 +129,7 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
             <fieldset>
               <legend className="text-base font-bold text-ink">{question.prompt}</legend>
               <p className="mt-1 text-sm text-muted-foreground">
-                There are no right or wrong answers. Every completed opinion response confirms Ksh
-                20.
+                There are no right or wrong answers. Every completed opinion response confirms {ksh(survey.rewardPerQuestion)}.
               </p>
               <div className="mt-4 space-y-2">
                 {question.options.map((opt) => (

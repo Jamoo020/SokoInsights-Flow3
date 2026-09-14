@@ -43,7 +43,7 @@ function WalletPage() {
   const [phase, setPhase] = useState<Phase>("idle");
 
   const balances = getRewardBalances(state);
-  const membershipInactive = state.plan === "Free";
+  const membershipInactive = !state.membershipActive;
   const belowThreshold = balances.withdrawable < MIN_WITHDRAWAL;
   const busy = phase === "loading" || phase === "waiting";
 

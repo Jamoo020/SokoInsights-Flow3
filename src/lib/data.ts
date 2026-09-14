@@ -3,115 +3,42 @@ import bankingImg from "@/assets/cat-banking.jpg";
 import researchImg from "@/assets/cat-research.jpg";
 import premiumImg from "@/assets/cat-premium.jpg";
 
-export type PlanTier =
-  "Free" | "Basic" | "Standard" | "Standard Plus" | "Premium" | "Premium Plus" | "Platinum";
-
 export const QUESTION_REWARD = 20;
 export const REWARD_PROCESSING_HOURS = 48;
 export const MEMBERSHIP_ACTIVATION_PRICE = 200;
-
-export const PLAN_ORDER: PlanTier[] = [
-  "Free",
-  "Basic",
-  "Standard",
-  "Standard Plus",
-  "Premium",
-  "Premium Plus",
-  "Platinum",
-];
-
-export function planRank(plan: PlanTier) {
-  return PLAN_ORDER.indexOf(plan);
-}
-
-export type PlanBadge = "Basic" | "Standard" | "Premium";
-
-export type Plan = {
-  id: PlanTier;
-  name: string;
-  price: number;
-  tagline: string;
-  features: string[];
-  surveyLimit: string;
-  support: string;
-  rewardRange: string;
-  badge?: "Best Value" | "Best Deal";
-};
-
-export const PLANS: Plan[] = [
-  {
-    id: "Basic",
-    name: "Basic",
-    price: MEMBERSHIP_ACTIVATION_PRICE,
-    tagline: "Start with entry-level research",
-    features: [
-      "Access to Basic survey category",
-      "Profile verification",
-      "M-PESA payouts from Ksh 2,500",
-    ],
-    surveyLimit: "Up to 10 eligible surveys / month",
-    support: "Email support",
-    rewardRange: "Ksh 20 per completed question",
-  },
-  {
-    id: "Standard",
-    name: "Standard",
-    price: 399,
-    tagline: "More categories, more research demand",
-    features: ["Basic + Standard categories", "Priority survey matching", "Weekly payout windows"],
-    surveyLimit: "Up to 25 eligible surveys / month",
-    support: "Email + WhatsApp support",
-    rewardRange: "Ksh 20 per completed question",
-  },
-  {
-    id: "Standard Plus",
-    name: "Standard Plus",
-    price: 499,
-    tagline: "The balance most members choose",
-    features: ["Basic + Standard categories", "Extra banking research", "Faster payout processing"],
-    surveyLimit: "Up to 35 eligible surveys / month",
-    support: "Priority email + WhatsApp",
-    rewardRange: "Ksh 20 per completed question",
-    badge: "Best Value",
-  },
-  {
-    id: "Premium",
-    name: "Premium",
-    price: 799,
-    tagline: "Full category access",
-    features: ["All survey categories", "Premium brand studies", "Same-day payout review"],
-    surveyLimit: "Up to 50 eligible surveys / month",
-    support: "Dedicated support line",
-    rewardRange: "Ksh 20 per completed question",
-  },
-  {
-    id: "Premium Plus",
-    name: "Premium Plus",
-    price: 999,
-    tagline: "Higher limits for active members",
-    features: ["All categories", "Longer high-value studies", "Early access to new research"],
-    surveyLimit: "Up to 70 eligible surveys / month",
-    support: "Dedicated support line",
-    rewardRange: "Ksh 20 per completed question",
-  },
-  {
-    id: "Platinum",
-    name: "Platinum",
-    price: 1499,
-    tagline: "Maximum access and limits",
-    features: ["All categories", "Invite-only panels", "Fastest payout review"],
-    surveyLimit: "Unlimited eligible surveys",
-    support: "Account manager",
-    rewardRange: "Ksh 20 per completed question",
-    badge: "Best Deal",
-  },
-];
-
-export type CategoryId = "telecom" | "banking" | "research" | "premium";
+export type CategoryId =
+  | "telecom" | "banking" | "finance" | "shopping" | "food" | "technology"
+  | "transport" | "automotive" | "healthcare" | "education" | "entertainment"
+  | "travel" | "ecommerce" | "apps" | "consumer-products" | "agriculture"
+  | "housing" | "insurance" | "energy" | "beauty" | "sports" | "media"
+  | "employment" | "lifestyle" | "public-services" | "research" | "premium";
 
 export const CATEGORY_IMAGES: Record<CategoryId, string> = {
   telecom: telecomImg,
   banking: bankingImg,
+  finance: bankingImg,
+  shopping: researchImg,
+  food: researchImg,
+  technology: premiumImg,
+  transport: researchImg,
+  automotive: premiumImg,
+  healthcare: researchImg,
+  education: researchImg,
+  entertainment: premiumImg,
+  travel: researchImg,
+  ecommerce: researchImg,
+  apps: premiumImg,
+  "consumer-products": researchImg,
+  agriculture: researchImg,
+  housing: premiumImg,
+  insurance: bankingImg,
+  energy: researchImg,
+  beauty: premiumImg,
+  sports: premiumImg,
+  media: researchImg,
+  employment: bankingImg,
+  lifestyle: researchImg,
+  "public-services": bankingImg,
   research: researchImg,
   premium: premiumImg,
 };
@@ -119,6 +46,29 @@ export const CATEGORY_IMAGES: Record<CategoryId, string> = {
 export const CATEGORY_LABELS: Record<CategoryId, string> = {
   telecom: "Telecom",
   banking: "Banking",
+  finance: "Finance",
+  shopping: "Shopping",
+  food: "Food & Beverage",
+  technology: "Technology",
+  transport: "Transport",
+  automotive: "Automotive",
+  healthcare: "Healthcare",
+  education: "Education",
+  entertainment: "Entertainment",
+  travel: "Travel",
+  ecommerce: "E-commerce",
+  apps: "Mobile Apps",
+  "consumer-products": "Consumer Products",
+  agriculture: "Agriculture",
+  housing: "Housing",
+  insurance: "Insurance",
+  energy: "Energy",
+  beauty: "Beauty & Personal Care",
+  sports: "Sports",
+  media: "Media",
+  employment: "Employment & Careers",
+  lifestyle: "Kenyan Lifestyle",
+  "public-services": "Public Services",
   research: "Research",
   premium: "Premium",
 };
@@ -129,65 +79,102 @@ export type Question = {
   options: string[];
 };
 
-export type Survey = {
+export type Topic = {
   id: string;
   title: string;
-  brand: string;
   category: CategoryId;
-  plan: PlanBadge;
+  description: string;
+  sourceContext: string;
+  status: "published";
+  createdAt: string;
   questions: number;
+  questionCount: number;
   minutes: number;
   maxReward: number;
+  rewardPerQuestion: number;
   questionSet: Question[];
 };
 
-function qs(brand: string, topic: string, count: number): Question[] {
+export type Survey = Topic;
+
+function qs(topic: string): Question[] {
   const base: Question[] = [
     {
       id: "q1",
-      prompt: `How often do you use ${brand} services?`,
+      prompt: `How often do you engage with ${topic}?`,
       options: ["Daily", "A few times a week", "A few times a month", "Rarely or never"],
     },
     {
       id: "q2",
-      prompt: `Which ${topic} matters most to you?`,
+      prompt: `Which part of ${topic} matters most to you?`,
       options: ["Cost", "Reliability", "Customer care", "Convenience"],
     },
     {
       id: "q3",
-      prompt: `How would you rate your last experience with ${brand}?`,
+      prompt: `How would you describe your most recent ${topic} experience?`,
       options: ["Excellent", "Good", "Average", "Poor"],
     },
     {
       id: "q4",
-      prompt: `Would you recommend ${brand} to a friend or family member?`,
+      prompt: `How likely are you to recommend this kind of ${topic} experience?`,
       options: ["Definitely", "Probably", "Not sure", "No"],
     },
     {
       id: "q5",
-      prompt: `Where do you usually hear about ${brand} offers?`,
+      prompt: `Where do you usually learn about ${topic}?`,
       options: ["Social media", "Radio or TV", "Friends and family", "SMS or app notifications"],
     },
     {
       id: "q6",
-      prompt: `What would make you use ${brand} more often?`,
+      prompt: `What would make you engage with ${topic} more often?`,
       options: ["Lower charges", "Better app experience", "Faster support", "More rewards"],
     },
     {
       id: "q7",
-      prompt: `How do you compare ${brand} with alternatives you have tried?`,
+      prompt: `How do you compare your current ${topic} options with alternatives?`,
       options: ["Much better", "Slightly better", "About the same", "Worse"],
     },
     {
       id: "q8",
-      prompt: `Which channel do you prefer when contacting ${brand}?`,
+      prompt: `Which channel do you prefer for decisions about ${topic}?`,
       options: ["In person", "Phone call", "App or chat", "Social media"],
     },
   ];
-  return base.slice(0, count);
+  return base;
 }
 
-export const SURVEYS: Survey[] = [
+const topicSeeds: Array<[string, CategoryId, number]> = [
+  ["Mobile Data Usage in Kenya", "telecom", 7], ["Mobile Money Habits", "telecom", 7], ["M-PESA Usage Experience", "telecom", 6], ["Mobile Payment Preferences", "telecom", 6], ["Smartphone Brand Preferences", "telecom", 6], ["Network Coverage Experience", "telecom", 6], ["Mobile Internet Spending", "telecom", 6], ["Airtime Purchasing Habits", "telecom", 5], ["5G Awareness", "telecom", 5], ["Mobile App Usage", "telecom", 6], ["Customer Service Experience", "telecom", 6], ["SIM Card Usage", "telecom", 5],
+  ["Kenyan Banking Preferences", "banking", 7], ["Mobile Banking Habits", "banking", 7], ["Bank App Experience", "banking", 6], ["Savings Habits", "banking", 6], ["Digital Banking Adoption", "banking", 6], ["ATM Usage", "banking", 5], ["Bank Customer Service", "banking", 6], ["Loan Product Awareness", "banking", 6], ["Credit Card Awareness", "banking", 5], ["Banking Security", "banking", 6],
+  ["Personal Budgeting", "finance", 6], ["Digital Payments in Kenya", "finance", 7], ["Insurance Awareness", "insurance", 6], ["Household Financial Planning", "finance", 6], ["Supermarket Shopping Habits", "shopping", 7], ["Price Comparison Habits", "shopping", 6], ["Brand Loyalty", "consumer-products", 6], ["Household Purchasing Decisions", "shopping", 6], ["Consumer Promotions", "shopping", 5], ["Cash vs Digital Payments", "shopping", 6],
+  ["Online Shopping in Kenya", "ecommerce", 7], ["Delivery Services", "ecommerce", 6], ["Restaurant Preferences", "food", 6], ["Soft Drink Preferences", "food", 5], ["Fast Food Habits", "food", 6], ["Kenyan Food Purchasing", "food", 7], ["Coffee Consumption", "food", 5], ["Food Delivery", "food", 6], ["Smartphone Usage", "technology", 7], ["AI Awareness", "technology", 6],
+  ["Social Media Usage", "media", 7], ["Streaming Services", "entertainment", 6], ["Laptop Purchasing", "technology", 6], ["Cloud Services", "technology", 5], ["Online Privacy", "technology", 6], ["Cybersecurity Awareness", "technology", 6], ["Public Transport Experience", "transport", 7], ["Ride-Hailing Usage", "transport", 6], ["Fuel Purchasing Habits", "automotive", 5], ["Vehicle Ownership", "automotive", 6],
+  ["Car Maintenance", "automotive", 6], ["Motorcycle Transport", "transport", 5], ["Nairobi Commuting", "transport", 7], ["Healthcare Access", "healthcare", 7], ["Pharmacy Shopping", "healthcare", 6], ["Fitness Habits", "healthcare", 5], ["Online Learning", "education", 6], ["Skills Development", "education", 6], ["Domestic Travel", "travel", 6], ["Kenyan Holiday Planning", "travel", 6],
+  ["Rental Housing Experience", "housing", 7], ["Home Improvement", "housing", 6], ["Agricultural Input Purchasing", "agriculture", 6], ["Beauty Product Choices", "beauty", 6], ["Sports Participation", "sports", 5], ["News Consumption", "media", 6], ["Job Search Habits", "employment", 7], ["Workplace Benefits", "employment", 6], ["Kenyan Lifestyle Priorities", "lifestyle", 7], ["Public Service Digital Access", "public-services", 6],
+];
+
+export const SURVEYS: Survey[] = topicSeeds.map(([title, category, minutes], index) => {
+  const questionSet = qs(title);
+  return {
+    id: `topic-${index + 1}`,
+    title,
+    category,
+    description: `Share your experience, preferences and habits related to ${title.toLowerCase()}.`,
+    sourceContext: "Original topic informed by broad Kenyan consumer research themes and public market signals.",
+    status: "published",
+    createdAt: "2026-09-01",
+    questions: questionSet.length,
+    questionCount: questionSet.length,
+    minutes,
+    maxReward: questionSet.length * QUESTION_REWARD,
+    rewardPerQuestion: QUESTION_REWARD,
+    questionSet,
+  };
+});
+
+/* Legacy catalogue entries were intentionally replaced by free research topics. */
+/*
+export const LEGACY_SURVEYS: Survey[] = [
   {
     id: "surveysplus-welcome",
     title: "SurveysPlus Welcome",
@@ -299,16 +286,7 @@ export const SURVEYS: Survey[] = [
     questionSet: qs("Absa Private Banking", "premium banking factor", 8),
   },
 ];
-
-export const PLAN_BADGE_REQUIREMENT: Record<PlanBadge, PlanTier> = {
-  Basic: "Basic",
-  Standard: "Standard",
-  Premium: "Premium",
-};
-
-export function isSurveyUnlocked(survey: Survey, plan: PlanTier) {
-  return planRank(plan) >= planRank(PLAN_BADGE_REQUIREMENT[survey.plan]);
-}
+*/
 
 export function surveyImage(survey: Survey) {
   return CATEGORY_IMAGES[survey.category];

@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle2, Clock, Lock } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock } from "lucide-react";
 import { Action, Pill } from "@/components/ui-kit";
 import { CATEGORY_LABELS, QUESTION_REWARD, ksh, surveyImage, type Survey } from "@/lib/data";
 
@@ -27,7 +27,7 @@ export function SurveyCard({
           className="size-full object-cover"
         />
         <span className="absolute left-3 top-3">
-          <Pill tone="accent">{survey.plan} plan</Pill>
+          <Pill tone="accent">Free topic</Pill>
         </span>
         {completed && (
           <span className="absolute right-3 top-3">
@@ -50,12 +50,6 @@ export function SurveyCard({
           <span className="text-accent-foreground">{ksh(QUESTION_REWARD)} per question</span> ·
           confirmed after each answer
         </p>
-        {locked && (
-          <p className="mt-2 flex items-start gap-1.5 text-sm text-muted-foreground">
-            <Lock className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-            This survey requires the {survey.plan} plan.
-          </p>
-        )}
         <div className="mt-5 pt-1">
           <Action
             block
@@ -64,7 +58,6 @@ export function SurveyCard({
             disabled={completed}
             aria-label={`${ctaLabel} — ${survey.title}`}
           >
-            {locked && <Lock className="size-4" aria-hidden="true" />}
             {completed ? "Completed" : ctaLabel}
             {!locked && !completed && <ArrowRight className="size-4" aria-hidden="true" />}
           </Action>

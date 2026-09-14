@@ -6,8 +6,8 @@ import { Action } from "@/components/ui-kit";
 
 const navItems = [
   { label: "How it works", href: "#how-it-works" },
-  { label: "Surveys", href: "#surveys" },
-  { label: "Plans", href: "#plans" },
+  { label: "Topics", href: "#surveys" },
+  { label: "Membership", href: "#plans" },
 ];
 
 export function PublicHeader() {
@@ -107,7 +107,7 @@ export function SiteFooter() {
               Create account
             </Link>
             <a className="text-muted-foreground hover:text-ink" href="/#plans">
-              Plans
+              Membership
             </a>
             <a className="text-muted-foreground hover:text-ink" href="/#trust">
               Transparency

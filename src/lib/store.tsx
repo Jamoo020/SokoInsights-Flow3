@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { QUESTION_REWARD, REWARD_PROCESSING_HOURS, type PlanTier, type Survey } from "./data";
+import { QUESTION_REWARD, REWARD_PROCESSING_HOURS, MEMBERSHIP_ACTIVATION_PRICE, type Survey } from "./data";
 
 export type MockUser = {
   name: string;
@@ -19,7 +19,7 @@ export type Transaction = {
   id: string;
   label: string;
   amount: number;
-  type: "reward" | "withdrawal" | "subscription";
+  type: "reward" | "withdrawal" | "membership";
   date: string;
 };
 
@@ -34,7 +34,7 @@ export type RewardRecord = {
 
 export type AppState = {
   user: MockUser | null;
-  plan: PlanTier;
+  membershipActive: boolean;
   balance: number;
   lifetimeEarned: number;
   withdrawn: number;
@@ -48,7 +48,7 @@ const STORAGE_KEY = "pollyakenya.state.v1";
 
 const initialState: AppState = {
   user: null,
-  plan: "Free",
+  membershipActive: false,
   balance: 0,
   lifetimeEarned: 0,
   withdrawn: 0,
@@ -64,7 +64,7 @@ type Ctx = {
   signUp: (user: MockUser) => void;
   signIn: (user: MockUser) => void;
   signOut: () => void;
-  activatePlan: (plan: PlanTier, price: number) => void;
+  activateMembership: () => void;
   confirmQuestion: (survey: Survey, questionId: string) => void;
   completeSurvey: (survey: Survey) => void;
   withdraw: (amount: number) => void;
@@ -80,14 +80,21 @@ export function getRewardBalances(state: AppState, now = Date.now()) {
       .filter((reward) => new Date(reward.eligibleAt).getTime() <= now)
       .reduce((total, reward) => total + reward.amount, 0) - state.withdrawn,
   );
-  const withdrawable = state.plan === "Free" ? 0 : eligible;
+  const withdrawable = state.membershipActive ? eligible : 0;
   return { processing, eligible, withdrawable };
 }
 
-function hydrateState(raw: Partial<AppState>): AppState {
+function hydrateState(raw: Partial<AppState> & { plan?: string }): AppState {
   const rewardRecords = raw.rewardRecords ?? [];
+  const stateWithoutLegacyPlan = { ...raw };
+  delete stateWithoutLegacyPlan.plan;
   if (rewardRecords.length > 0 || !raw.balance) {
-    return { ...initialState, ...raw, rewardRecords };
+    return {
+      ...initialState,
+      ...stateWithoutLegacyPlan,
+      membershipActive: raw.membershipActive ?? raw.plan !== "Free",
+      rewardRecords,
+    };
   }
 
   const legacyReward: RewardRecord = {
@@ -100,7 +107,8 @@ function hydrateState(raw: Partial<AppState>): AppState {
   };
   return {
     ...initialState,
-    ...raw,
+    ...stateWithoutLegacyPlan,
+    membershipActive: raw.membershipActive ?? raw.plan !== "Free",
     confirmedEarnings: raw.confirmedEarnings ?? raw.lifetimeEarned ?? raw.balance,
     rewardRecords: [legacyReward],
   };
@@ -150,16 +158,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       signUp: (user) => persist({ ...initialState, user }),
       signIn: (user) => update((prev) => ({ ...prev, user: { ...prev.user, ...user } })),
       signOut: () => update((prev) => ({ ...prev, user: null })),
-      activatePlan: (plan, price) =>
+      activateMembership: () =>
         update((prev) => ({
           ...prev,
-          plan,
+          membershipActive: true,
           transactions: [
             {
-              id: `sub-${Date.now()}`,
-              label: `${plan} subscription`,
-              amount: -price,
-              type: "subscription",
+              id: `membership-${Date.now()}`,
+              label: "Membership activation",
+              amount: -MEMBERSHIP_ACTIVATION_PRICE,
+              type: "membership",
               date: new Date().toISOString(),
             },
             ...prev.transactions,
@@ -174,7 +182,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             id: rewardId,
             surveyId: survey.id,
             questionId,
-            amount: QUESTION_REWARD,
+            amount: survey.rewardPerQuestion ?? QUESTION_REWARD,
             confirmedAt: now.toISOString(),
             eligibleAt: new Date(
               now.getTime() + REWARD_PROCESSING_HOURS * 60 * 60 * 1000,
@@ -208,7 +216,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       withdraw: (amount) =>
         update((prev) => {
           const { withdrawable } = getRewardBalances(prev);
-          if (prev.plan === "Free" || amount <= 0 || amount > withdrawable) return prev;
+          if (!prev.membershipActive || amount <= 0 || amount > withdrawable) return prev;
           return {
             ...prev,
             balance: Math.max(0, prev.balance - amount),

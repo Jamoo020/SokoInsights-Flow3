@@ -1,23 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BadgeCheck, Crown } from "lucide-react";
+import { BadgeCheck, Wallet } from "lucide-react";
 import { useState } from "react";
 import { SubscriptionModal } from "@/components/subscription-modal";
 import { Action, Pill } from "@/components/ui-kit";
-import { ksh, PLANS, type Plan } from "@/lib/data";
+import { ksh, MEMBERSHIP_ACTIVATION_PRICE } from "@/lib/data";
 import { useStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_member/plans")({
   head: () => ({
     meta: [
-      { title: "Plans | SokoInsights" },
+      { title: "Membership Activation | SokoInsights" },
       {
         name: "description",
         content:
-          "Compare SokoInsights membership plans. Every completed opinion question confirms Ksh 20 and becomes eligible within 48 hours.",
+          "Activate SokoInsights membership to unlock withdrawals from your eligible rewards.",
       },
-      { property: "og:title", content: "Plans | SokoInsights" },
-      { property: "og:description", content: "Plans from Ksh 199 per month, billed by M-PESA." },
+      { property: "og:title", content: "Membership Activation | SokoInsights" },
+      { property: "og:description", content: "Unlock withdrawals for Ksh 200." },
     ],
   }),
   component: Plans,
@@ -25,83 +24,33 @@ export const Route = createFileRoute("/_member/plans")({
 
 function Plans() {
   const { state } = useStore();
-  const [selected, setSelected] = useState<Plan | null>(null);
+  const [selected, setSelected] = useState(false);
 
   return (
     <div className="space-y-10">
       <section className="rounded-3xl bg-primary p-6 text-primary-foreground shadow-lift sm:p-10">
-        <Pill tone="inverted">Choose a Subscription Plan</Pill>
+        <Pill tone="inverted">Membership activation</Pill>
         <h1 className="mt-4 max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">
-          Unlock more surveys. Earn faster.
+          Unlock withdrawals when you are ready.
         </h1>
         <p className="mt-3 text-sm font-semibold text-primary-foreground/85">
-          Pay by M-PESA STK Push. Your current plan: {state.plan}.
+          Browse topics and answer questions for free. Membership is only required to withdraw eligible rewards.
         </p>
       </section>
 
-      <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {PLANS.map((plan) => {
-          const current = state.plan === plan.id;
-          return (
-            <article
-              key={plan.id}
-              className={cn(
-                "flex flex-col rounded-2xl border bg-card p-6 shadow-soft",
-                plan.badge ? "border-accent" : "border-border",
-              )}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-xl font-extrabold tracking-tight text-ink">{plan.name}</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">{plan.tagline}</p>
-                </div>
-                {plan.badge && (
-                  <Pill tone="accent">
-                    <Crown className="size-3.5" aria-hidden="true" />
-                    {plan.badge}
-                  </Pill>
-                )}
-              </div>
-              <p className="mt-5 text-3xl font-extrabold tracking-tight text-ink">
-                {ksh(plan.price)}
-                <span className="text-base font-semibold text-muted-foreground">/month</span>
-              </p>
-              <ul className="mt-5 flex-1 space-y-2 text-sm text-muted-foreground">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2">
-                    <BadgeCheck
-                      className="mt-0.5 size-4 shrink-0 text-primary"
-                      aria-hidden="true"
-                    />
-                    {f}
-                  </li>
-                ))}
-                <li className="flex items-start gap-2">
-                  <BadgeCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-                  {plan.surveyLimit}
-                </li>
-                <li className="flex items-start gap-2">
-                  <BadgeCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-                  {plan.support}
-                </li>
-              </ul>
-              <p className="mt-4 rounded-xl bg-secondary p-3 text-xs leading-relaxed text-muted-foreground">
-                Ksh 20 is confirmed for every completed opinion question. Rewards become eligible
-                within 48 hours and require active membership for withdrawal.
-              </p>
-              <div className="mt-5">
-                <Action
-                  block
-                  variant={current ? "outline" : "primary"}
-                  disabled={current}
-                  onClick={() => setSelected(plan)}
-                >
-                  {current ? "Current plan" : `Subscribe — ${ksh(plan.price)}`}
-                </Action>
-              </div>
-            </article>
-          );
-        })}
+      <section className="mx-auto max-w-2xl rounded-2xl border border-border bg-card p-6 shadow-soft sm:p-8">
+        <Wallet className="size-8 text-primary" aria-hidden="true" />
+        <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-ink">SokoInsights Membership</h2>
+        <p className="mt-2 text-4xl font-extrabold text-ink">{ksh(MEMBERSHIP_ACTIVATION_PRICE)}</p>
+        <ul className="mt-6 space-y-3 text-sm text-muted-foreground">
+          {[
+            "Browse every published topic for free",
+            "Receive Ksh 20 for each completed question",
+            "Unlock withdrawals from your eligible balance",
+          ].map((item) => <li key={item} className="flex items-start gap-2"><BadgeCheck className="mt-0.5 size-4 shrink-0 text-primary" />{item}</li>)}
+        </ul>
+        <p className="mt-6 rounded-xl bg-secondary p-4 text-sm text-muted-foreground">Membership activation is not required to browse topics, answer questions or accumulate confirmed rewards.</p>
+        <div className="mt-6"><Action block disabled={state.membershipActive} onClick={() => setSelected(true)}>{state.membershipActive ? "Membership active" : `Activate Membership — ${ksh(MEMBERSHIP_ACTIVATION_PRICE)}`}</Action></div>
       </section>
 
       <p className="text-xs leading-relaxed text-muted-foreground">
@@ -109,7 +58,7 @@ function Plans() {
         is taken.
       </p>
 
-      <SubscriptionModal plan={selected} onClose={() => setSelected(null)} />
+      <SubscriptionModal open={selected} onClose={() => setSelected(false)} />
     </div>
   );
 }

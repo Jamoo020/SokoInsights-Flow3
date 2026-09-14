@@ -81,14 +81,14 @@ function Profile() {
                 {state.user?.phone || "Phone not set"}
               </p>
               <div className="mt-2">
-                <Pill tone="inverted">Current plan: {state.plan}</Pill>
+                <Pill tone="inverted">Membership: {state.membershipActive ? "Active" : "Inactive"}</Pill>
               </div>
             </div>
           </div>
           <div className="col-span-2 sm:col-auto">
             <Link to="/plans">
               <Action variant="accent" block>
-                Manage plan
+                Manage membership
               </Action>
             </Link>
           </div>

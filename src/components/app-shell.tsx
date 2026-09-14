@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { to: "/app", label: "Home" },
   { to: "/categories", label: "Categories" },
-  { to: "/plans", label: "Plans" },
+  { to: "/plans", label: "Membership" },
   { to: "/wallet", label: "Wallet" },
   { to: "/profile", label: "Profile" },
 ] as const;
@@ -52,7 +52,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link to="/plans" className="hidden sm:block">
               <Action variant="accent" size="sm">
                 <Crown className="size-4" aria-hidden="true" />
-                Upgrade
+                Membership
               </Action>
             </Link>
             <button
@@ -97,7 +97,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Link to="/plans" onClick={() => setOpen(false)}>
                 <Action variant="accent" block>
                   <Crown className="size-4" aria-hidden="true" />
-                  Upgrade
+                  Membership
                 </Action>
               </Link>
               <Action variant="destructive" block onClick={handleSignOut}>

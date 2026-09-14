@@ -37,26 +37,26 @@ const steps = [
   {
     n: "01",
     title: "Create an account",
-    body: "Sign up with your name, email and phone number. Members are verified before accessing eligible surveys.",
+    body: "Explore research topics by category and choose one that interests you.",
   },
   {
     n: "02",
-    title: "Choose a subscription",
-    body: "Subscription tiers determine which survey categories you can access and how many surveys you may take each month.",
+    title: "Choose",
+    body: "Open any available topic and start answering questions for free.",
   },
   {
     n: "03",
-    title: "Complete surveys, get rewarded",
-    body: "Answer short multiple-choice surveys. Every completed opinion question confirms Ksh 20, then processes for 48 hours.",
+    title: "Answer and earn",
+    body: "Every completed question confirms Ksh 20 immediately, then processes for 48 hours.",
   },
 ];
 
 const trust = [
   {
     icon: CreditCard,
-    title: "Subscription based",
-    body: "SokoInsights is a paid membership platform. There is no promise of income. Subscriptions are billed through M-PESA.",
-    points: ["Monthly membership", "Cancel any time", "No income promises"],
+    title: "Free research topics",
+    body: "Browse categories, open topics and share opinions without paying to participate.",
+    points: ["Free topic discovery", "Free answers", "Original consumer research"],
   },
   {
     icon: Wallet,
@@ -97,9 +97,8 @@ function Landing() {
                 Share your opinion on the brands you already use.
               </h1>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                SokoInsights is a subscription-based consumer research community where members
-                complete short multiple-choice surveys for Ksh 20 confirmed per completed question.
-                Rewards become eligible within 48 hours.
+                Explore research topics, share your opinions and earn Ksh 20 for every completed
+                question. Rewards are confirmed as you answer and become eligible within 48 hours.
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link to="/sign-in">
@@ -114,7 +113,7 @@ function Landing() {
                 </Link>
               </div>
               <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-ink">
-                {["Verified members only", "M-PESA rewards", "Subscription required"].map((t) => (
+                {["Free topics", "Ksh 20 per question", "Membership unlocks withdrawals"].map((t) => (
                   <li key={t} className="flex items-center gap-2">
                     <BadgeCheck className="size-4 text-primary" aria-hidden="true" />
                     {t}
@@ -170,7 +169,7 @@ function Landing() {
             <SectionHeading
               eyebrow="Categories"
               title="Categories our members research."
-              description="Survey availability depends on subscription tier, member profile and current research demand."
+              description="Browse a growing library of free topics across Kenyan consumer categories."
             />
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {featured.map((survey) => (
@@ -190,7 +189,7 @@ function Landing() {
                   </div>
                   <div className="flex flex-1 flex-col p-5">
                     <Pill tone="accent" className="self-start">
-                      {survey.plan} plan
+                      Free topic · {ksh(survey.maxReward)} total
                     </Pill>
                     <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
                       {CATEGORY_LABELS[survey.category]}
@@ -256,15 +255,15 @@ function Landing() {
               <Smartphone className="size-3.5" aria-hidden="true" /> Billed via M-PESA
             </Pill>
             <h2 className="mx-auto mt-5 max-w-2xl text-3xl font-extrabold tracking-tight text-primary-foreground sm:text-4xl">
-              Choose a subscription that fits you.
+              Activate membership when you are ready to withdraw.
             </h2>
             <p className="mt-4 text-lg font-semibold text-primary-foreground/85">
-              Plans start from Ksh 199 per month.
+              Membership activation costs Ksh 200 and does not affect topic access.
             </p>
             <div className="mt-8 flex justify-center">
               <Link to="/create-account">
                 <Action size="lg" variant="inverted">
-                  Compare plans
+                  View membership
                 </Action>
               </Link>
             </div>

@@ -3,26 +3,26 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Action, FieldError, inputClass } from "@/components/ui-kit";
-import { isKenyanPhone, ksh, type Plan } from "@/lib/data";
+import { isKenyanPhone, ksh, MEMBERSHIP_ACTIVATION_PRICE } from "@/lib/data";
 import { useStore } from "@/lib/store";
 
 type Phase = "idle" | "loading" | "waiting" | "success" | "failed" | "cancelled";
 
-export function SubscriptionModal({ plan, onClose }: { plan: Plan | null; onClose: () => void }) {
-  const { state, activatePlan } = useStore();
+export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { state, activateMembership } = useStore();
   const [phone, setPhone] = useState(state.user?.phone ?? "");
   const [error, setError] = useState<string>();
   const [phase, setPhase] = useState<Phase>("idle");
 
   useEffect(() => {
-    if (plan) {
+    if (open) {
       setPhase("idle");
       setError(undefined);
       setPhone(state.user?.phone ?? "");
     }
-  }, [plan, state.user?.phone]);
+  }, [open, state.user?.phone]);
 
-  if (!plan) return null;
+  if (!open) return null;
 
   const busy = phase === "loading" || phase === "waiting";
 
@@ -36,8 +36,8 @@ export function SubscriptionModal({ plan, onClose }: { plan: Plan | null; onClos
     window.setTimeout(() => setPhase("waiting"), 1200);
     window.setTimeout(() => {
       setPhase("success");
-      activatePlan(plan.id, plan.price);
-      toast.success("Plan activated successfully", { description: `${plan.name} is now your active plan.` });
+      activateMembership();
+      toast.success("Membership activated", { description: "Withdrawals are now unlocked for eligible rewards." });
     }, 3400);
   };
 
@@ -46,7 +46,7 @@ export function SubscriptionModal({ plan, onClose }: { plan: Plan | null; onClos
       <DialogContent className="max-w-md rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-extrabold tracking-tight text-ink">
-            Confirm your subscription
+            Activate membership
           </DialogTitle>
           <DialogDescription>
             An M-PESA payment prompt will be simulated for this prototype. No real payment is taken.
@@ -55,16 +55,16 @@ export function SubscriptionModal({ plan, onClose }: { plan: Plan | null; onClos
 
         <div className="rounded-xl border border-border bg-secondary/50 p-4 text-sm">
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Plan selected</span>
-            <span className="font-bold text-ink">{plan.name}</span>
+            <span className="text-muted-foreground">Purpose</span>
+            <span className="font-bold text-ink">Unlock withdrawals</span>
           </div>
           <div className="mt-2 flex items-center justify-between">
             <span className="text-muted-foreground">Price</span>
-            <span className="font-bold text-ink">{ksh(plan.price)}</span>
+            <span className="font-bold text-ink">{ksh(MEMBERSHIP_ACTIVATION_PRICE)}</span>
           </div>
           <div className="mt-2 flex items-center justify-between">
-            <span className="text-muted-foreground">Billing</span>
-            <span className="font-bold text-ink">Monthly</span>
+            <span className="text-muted-foreground">Payment</span>
+            <span className="font-bold text-ink">One-time activation</span>
           </div>
         </div>
 
@@ -102,7 +102,7 @@ export function SubscriptionModal({ plan, onClose }: { plan: Plan | null; onClos
           <StatusRow
             tone="success"
             icon={<CheckCircle2 className="size-5" />}
-            title="Payment successful. Plan activated."
+            title="Payment successful. Membership activated."
           />
         )}
         {phase === "failed" && (

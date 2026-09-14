@@ -152,8 +152,8 @@ function CreateAccount() {
           </Action>
           <p className="text-center text-xs leading-relaxed text-muted-foreground">
             By creating an account you agree to the SokoInsights terms of membership and privacy
-            notice. Membership is a paid subscription. Completed opinion responses confirm Ksh 20
-            and become eligible within 48 hours before withdrawal.
+            notice. Topics and questions are free. Completed opinion responses confirm Ksh 20 and
+            become eligible within 48 hours; membership activation is required only before withdrawal.
           </p>
         </form>
       </div>
