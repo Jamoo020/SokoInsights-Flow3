@@ -1,0 +1,152 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { BarChart3, CalendarCheck, Clock, Coins, Crown, Wallet } from "lucide-react";
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
+import { SubscriptionModal } from "@/components/subscription-modal";
+import { SurveyCard } from "@/components/survey-card";
+import { SurveyRunner } from "@/components/survey-runner";
+import { Action, Panel, Pill } from "@/components/ui-kit";
+import { isSurveyUnlocked, ksh, PLANS, SURVEYS, type PlanBadge, type Survey } from "@/lib/data";
+import { useStore } from "@/lib/store";
+import { cn } from "@/lib/utils";
+
+export const Route = createFileRoute("/_member/app")({
+  head: () => ({
+    meta: [
+      { title: "Dashboard | SokoInsights" },
+      { name: "description", content: "Your SokoInsights member home: wallet balance, plan and available surveys." },
+      { property: "og:title", content: "Dashboard | SokoInsights" },
+      { property: "og:description", content: "Wallet balance, plan and available surveys." },
+    ],
+  }),
+  component: MemberHome,
+});
+
+const filters = ["All", "Basic", "Standard", "Premium"] as const;
+
+function MemberHome() {
+  const { state } = useStore();
+  const [filter, setFilter] = useState<(typeof filters)[number]>("All");
+  const [active, setActive] = useState<Survey | null>(null);
+  const [upgradePlan, setUpgradePlan] = useState<(typeof PLANS)[number] | null>(null);
+
+  const firstName = state.user?.name?.split(" ")[0] ?? "jamaa";
+
+  const visible = useMemo(
+    () => (filter === "All" ? SURVEYS : SURVEYS.filter((s) => s.plan === (filter as PlanBadge))),
+    [filter],
+  );
+
+  const metrics = [
+    { icon: BarChart3, label: "Surveys done", value: String(state.completedSurveys.length) },
+    { icon: CalendarCheck, label: "Available today", value: "10" },
+    { icon: Coins, label: "Average reward", value: ksh(4600) },
+    { icon: Clock, label: "Average time", value: "10 min" },
+  ];
+
+  return (
+    <div className="space-y-10">
+      <section className="overflow-hidden rounded-3xl bg-primary p-6 text-primary-foreground shadow-lift sm:p-8">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+          <div className="min-w-0">
+            <Pill tone="inverted">Member dashboard</Pill>
+            <h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">Hujambo, {firstName}</h1>
+            <div className="mt-6 flex flex-wrap items-end gap-x-10 gap-y-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground/70">Wallet</p>
+                <p className="text-3xl font-extrabold sm:text-4xl">{ksh(state.balance)}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground/70">Plan</p>
+                <p className="text-2xl font-extrabold">{state.plan}</p>
+              </div>
+            </div>
+            <p className="mt-4 text-sm text-primary-foreground/80">Withdraw to M-PESA from Ksh 2,500.</p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+            <Link to="/wallet">
+              <Action variant="inverted" block>
+                <Wallet className="size-4" aria-hidden="true" /> Withdraw
+              </Action>
+            </Link>
+            <Link to="/plans">
+              <Action variant="accent" block>
+                <Crown className="size-4" aria-hidden="true" /> Upgrade plan
+              </Action>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section aria-label="Your statistics" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {metrics.map((m) => (
+          <Panel key={m.label} className="p-5">
+            <span className="grid size-10 place-items-center rounded-xl bg-primary-soft text-primary">
+              <m.icon className="size-5" aria-hidden="true" />
+            </span>
+            <p className="mt-3 text-sm font-medium text-muted-foreground">{m.label}</p>
+            <p className="mt-1 text-2xl font-extrabold tracking-tight text-ink">{m.value}</p>
+          </Panel>
+        ))}
+      </section>
+
+      <section>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">Available Surveys</h2>
+            <p className="mt-1.5 text-sm text-muted-foreground">
+              Tap a survey to start earning. No writing — just select answers.
+            </p>
+          </div>
+        </div>
+
+        <div role="tablist" aria-label="Filter surveys by plan" className="mt-5 flex flex-wrap gap-2">
+          {filters.map((f) => (
+            <button
+              key={f}
+              type="button"
+              role="tab"
+              aria-selected={filter === f}
+              onClick={() => setFilter(f)}
+              className={cn(
+                "h-10 rounded-full px-4 text-sm font-semibold transition-colors",
+                filter === f
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border bg-card text-muted-foreground hover:text-ink",
+              )}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {visible.map((survey) => {
+            const unlocked = isSurveyUnlocked(survey, state.plan);
+            const completed = state.completedSurveys.includes(survey.id);
+            return (
+              <SurveyCard
+                key={survey.id}
+                survey={survey}
+                locked={!unlocked}
+                completed={completed}
+                ctaLabel={unlocked ? "Start survey" : `Unlock with ${survey.plan}`}
+                onAction={() => {
+                  if (!unlocked) {
+                    toast.info(`This survey requires the ${survey.plan} plan.`);
+                    setUpgradePlan(PLANS.find((p) => p.id === survey.plan) ?? null);
+                    return;
+                  }
+                  setActive(survey);
+                }}
+              />
+            );
+          })}
+        </div>
+      </section>
+
+      <SurveyRunner survey={active} onClose={() => setActive(null)} />
+      <SubscriptionModal plan={upgradePlan} onClose={() => setUpgradePlan(null)} />
+    </div>
+  );
+}
