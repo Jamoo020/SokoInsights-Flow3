@@ -13,7 +13,8 @@ export const Route = createFileRoute("/_member/plans")({
       { title: "Plans | SokoInsights" },
       {
         name: "description",
-        content: "Compare SokoInsights subscription plans from Ksh 199 per month. Reward ranges are maximums, not guarantees.",
+        content:
+          "Compare SokoInsights membership plans. Every completed opinion question confirms Ksh 20 and becomes eligible within 48 hours.",
       },
       { property: "og:title", content: "Plans | SokoInsights" },
       { property: "og:description", content: "Plans from Ksh 199 per month, billed by M-PESA." },
@@ -68,7 +69,10 @@ function Plans() {
               <ul className="mt-5 flex-1 space-y-2 text-sm text-muted-foreground">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2">
-                    <BadgeCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+                    <BadgeCheck
+                      className="mt-0.5 size-4 shrink-0 text-primary"
+                      aria-hidden="true"
+                    />
                     {f}
                   </li>
                 ))}
@@ -82,10 +86,16 @@ function Plans() {
                 </li>
               </ul>
               <p className="mt-4 rounded-xl bg-secondary p-3 text-xs leading-relaxed text-muted-foreground">
-                {plan.rewardRange}. Rewards vary and are subject to eligibility and survey availability.
+                Ksh 20 is confirmed for every completed opinion question. Rewards become eligible
+                within 48 hours and require active membership for withdrawal.
               </p>
               <div className="mt-5">
-                <Action block variant={current ? "outline" : "primary"} disabled={current} onClick={() => setSelected(plan)}>
+                <Action
+                  block
+                  variant={current ? "outline" : "primary"}
+                  disabled={current}
+                  onClick={() => setSelected(plan)}
+                >
                   {current ? "Current plan" : `Subscribe — ${ksh(plan.price)}`}
                 </Action>
               </div>
@@ -95,7 +105,8 @@ function Plans() {
       </section>
 
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Payments in this prototype are simulated — no M-PESA transaction is initiated and no money is taken.
+        Payments in this prototype are simulated — no M-PESA transaction is initiated and no money
+        is taken.
       </p>
 
       <SubscriptionModal plan={selected} onClose={() => setSelected(null)} />

@@ -13,10 +13,15 @@ export const Route = createFileRoute("/create-account")({
       { title: "Create account | SokoInsights" },
       {
         name: "description",
-        content: "Join the SokoInsights consumer research community to unlock surveys and eligible M-PESA rewards.",
+        content:
+          "Join the SokoInsights consumer research community to unlock surveys and eligible M-PESA rewards.",
       },
       { property: "og:title", content: "Create account | SokoInsights" },
-      { property: "og:description", content: "Unlock surveys, track your wallet and cash out eligible rewards." },
+      {
+        property: "og:description",
+        content:
+          "Answer opinion questions for Ksh 20 confirmed per response. Rewards become eligible within 48 hours.",
+      },
     ],
   }),
   component: CreateAccount,
@@ -40,9 +45,11 @@ function CreateAccount() {
     const next: Errors = {};
     if (!form.name.trim()) next.name = "Enter your full name.";
     if (!form.phone.trim()) next.phone = "Enter your phone number.";
-    else if (!isKenyanPhone(form.phone)) next.phone = "Enter a valid Kenyan number, e.g. 0712 345 678.";
+    else if (!isKenyanPhone(form.phone))
+      next.phone = "Enter a valid Kenyan number, e.g. 0712 345 678.";
     if (!form.email.trim()) next.email = "Enter your email address.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = "Enter a valid email address.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      next.email = "Enter a valid email address.";
     if (form.password.length < 6) next.password = "Password must be at least 6 characters.";
     setErrors(next);
     if (Object.keys(next).length) return;
@@ -144,8 +151,9 @@ function CreateAccount() {
             {loading ? "Creating account…" : "Create account"}
           </Action>
           <p className="text-center text-xs leading-relaxed text-muted-foreground">
-            By creating an account you agree to the SokoInsights terms of membership and privacy notice. Membership is a
-            paid subscription and rewards are not guaranteed.
+            By creating an account you agree to the SokoInsights terms of membership and privacy
+            notice. Membership is a paid subscription. Completed opinion responses confirm Ksh 20
+            and become eligible within 48 hours before withdrawal.
           </p>
         </form>
       </div>

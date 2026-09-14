@@ -1,5 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BadgeCheck, Clock, CreditCard, ShieldCheck, Smartphone, Wallet } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Clock,
+  CreditCard,
+  ShieldCheck,
+  Smartphone,
+  Wallet,
+} from "lucide-react";
 import heroImg from "@/assets/hero-kenya.jpg";
 import { PublicHeader, SiteFooter } from "@/components/public-chrome";
 import { Action, Panel, Pill, SectionHeading } from "@/components/ui-kit";
@@ -12,12 +20,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "A subscription-based Kenyan consumer research community. Complete short multiple-choice surveys and receive eligible rewards through M-PESA.",
+          "A Kenyan consumer research community where every completed opinion response confirms Ksh 20, processed for 48 hours before eligibility.",
       },
       { property: "og:title", content: "SokoInsights — Your voice. Better market insights." },
       {
         property: "og:description",
-        content: "Complete short surveys and receive eligible M-PESA rewards. Rewards vary and are not guaranteed.",
+        content:
+          "Complete short surveys for Ksh 20 confirmed per question. Rewards become eligible within 48 hours.",
       },
     ],
   }),
@@ -38,7 +47,7 @@ const steps = [
   {
     n: "03",
     title: "Complete surveys, get rewarded",
-    body: "Answer short multiple-choice surveys. Eligible completed surveys can generate rewards. Reward amounts vary.",
+    body: "Answer short multiple-choice surveys. Every completed opinion question confirms Ksh 20, then processes for 48 hours.",
   },
 ];
 
@@ -51,9 +60,14 @@ const trust = [
   },
   {
     icon: Wallet,
-    title: "Rewards vary",
-    body: "Reward amounts depend on several factors and are never guaranteed.",
-    points: ["Plan", "Survey length", "Eligibility", "Research demand", "Survey availability"],
+    title: "Rewards are fixed",
+    body: "Every successfully completed opinion question confirms Ksh 20 immediately.",
+    points: [
+      "Ksh 20 per question",
+      "Confirmed immediately",
+      "Processed for 48 hours",
+      "Membership required to withdraw",
+    ],
   },
   {
     icon: ShieldCheck,
@@ -83,8 +97,9 @@ function Landing() {
                 Share your opinion on the brands you already use.
               </h1>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                SokoInsights is a subscription-based consumer research community where members complete short
-                multiple-choice surveys and can receive eligible rewards through M-PESA.
+                SokoInsights is a subscription-based consumer research community where members
+                complete short multiple-choice surveys for Ksh 20 confirmed per completed question.
+                Rewards become eligible within 48 hours.
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link to="/sign-in">
@@ -107,8 +122,9 @@ function Landing() {
                 ))}
               </ul>
               <p className="mt-6 max-w-xl rounded-xl border border-border bg-card/70 p-4 text-xs leading-relaxed text-muted-foreground">
-                SokoInsights is not an investment, employment opportunity, or “get paid to click” scheme. Rewards depend
-                on eligibility, plan, survey availability and completion and are not guaranteed.
+                SokoInsights is not an investment, employment opportunity, or “get paid to click”
+                scheme. Each completed opinion question confirms Ksh 20, with membership activation
+                required before withdrawal.
               </p>
             </div>
             <div className="relative">
@@ -124,7 +140,10 @@ function Landing() {
         </section>
 
         {/* How it works */}
-        <section id="how-it-works" className="scroll-mt-20 border-t border-border/70 py-16 lg:py-20">
+        <section
+          id="how-it-works"
+          className="scroll-mt-20 border-t border-border/70 py-16 lg:py-20"
+        >
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <SectionHeading
               eyebrow="How it works"
@@ -134,7 +153,9 @@ function Landing() {
             <div className="mt-10 grid gap-5 md:grid-cols-3">
               {steps.map((s) => (
                 <Panel key={s.n} className="h-full">
-                  <span className="text-sm font-extrabold tracking-[0.2em] text-accent-foreground">{s.n}</span>
+                  <span className="text-sm font-extrabold tracking-[0.2em] text-accent-foreground">
+                    {s.n}
+                  </span>
                   <h3 className="mt-3 text-xl font-extrabold tracking-tight text-ink">{s.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
                 </Panel>
@@ -174,13 +195,16 @@ function Landing() {
                     <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
                       {CATEGORY_LABELS[survey.category]}
                     </p>
-                    <h3 className="mt-1 text-lg font-extrabold tracking-tight text-ink">{survey.title}</h3>
+                    <h3 className="mt-1 text-lg font-extrabold tracking-tight text-ink">
+                      {survey.title}
+                    </h3>
                     <p className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
                       <Clock className="size-4" aria-hidden="true" />
                       {survey.questions} questions · about {survey.minutes} minutes
                     </p>
                     <p className="mt-3 text-sm font-semibold text-ink">
-                      Maximum possible reward: <span className="text-accent-foreground">{ksh(survey.maxReward)}</span>
+                      <span className="text-accent-foreground">Ksh 20 per question</span> · eligible
+                      within 48 hours
                     </p>
                     <div className="mt-5 pt-1">
                       <Link to="/sign-in">
@@ -211,7 +235,10 @@ function Landing() {
                   <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
                     {t.points.map((p) => (
                       <li key={p} className="flex items-start gap-2">
-                        <BadgeCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+                        <BadgeCheck
+                          className="mt-0.5 size-4 shrink-0 text-primary"
+                          aria-hidden="true"
+                        />
                         {p}
                       </li>
                     ))}

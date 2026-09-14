@@ -5,7 +5,11 @@ import { Logo } from "@/components/brand";
 import { Pill } from "@/components/ui-kit";
 import { cn } from "@/lib/utils";
 
-const benefits = ["Verified brand partners", "M-PESA STK push withdrawals", "Rewards up to Ksh 7,600 per survey"];
+const benefits = [
+  "Verified brand partners",
+  "M-PESA STK push withdrawals",
+  "Ksh 20 confirmed per question",
+];
 
 export function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -36,8 +40,8 @@ export function AuthLayout({ children }: { children: ReactNode }) {
               .
             </h1>
             <p className="mt-5 max-w-lg text-base leading-relaxed text-muted-foreground">
-              Create your SokoInsights account to unlock surveys, track your wallet and cash out eligible rewards to
-              M-PESA.
+              Create your SokoInsights account to answer opinion questions, track confirmed earnings
+              and withdraw eligible rewards to M-PESA after membership activation.
             </p>
             <ul className="mt-6 space-y-3">
               {benefits.map((b) => (
@@ -48,8 +52,8 @@ export function AuthLayout({ children }: { children: ReactNode }) {
               ))}
             </ul>
             <p className="mt-6 max-w-lg rounded-xl border border-border bg-card/70 p-4 text-xs leading-relaxed text-muted-foreground">
-              “Up to Ksh 7,600” is a maximum possible eligible reward for the longest premium studies, not a guaranteed
-              payout. Rewards vary by plan, survey length, eligibility and survey availability.
+              Every completed opinion response confirms Ksh 20 immediately. Rewards are processed
+              and become eligible within 48 hours before membership-gated withdrawal.
             </p>
           </section>
 
@@ -63,12 +67,19 @@ export function AuthLayout({ children }: { children: ReactNode }) {
 export function AuthTabs({ active }: { active: "create" | "signin" }) {
   const base = "flex-1 rounded-lg px-4 py-2.5 text-sm font-bold transition-colors text-center";
   return (
-    <div className="flex gap-1 rounded-xl bg-secondary p-1" role="tablist" aria-label="Authentication">
+    <div
+      className="flex gap-1 rounded-xl bg-secondary p-1"
+      role="tablist"
+      aria-label="Authentication"
+    >
       <Link
         to="/create-account"
         role="tab"
         aria-selected={active === "create"}
-        className={cn(base, active === "create" ? "bg-card text-ink shadow-soft" : "text-muted-foreground")}
+        className={cn(
+          base,
+          active === "create" ? "bg-card text-ink shadow-soft" : "text-muted-foreground",
+        )}
       >
         Create account
       </Link>
@@ -76,7 +87,10 @@ export function AuthTabs({ active }: { active: "create" | "signin" }) {
         to="/sign-in"
         role="tab"
         aria-selected={active === "signin"}
-        className={cn(base, active === "signin" ? "bg-card text-ink shadow-soft" : "text-muted-foreground")}
+        className={cn(
+          base,
+          active === "signin" ? "bg-card text-ink shadow-soft" : "text-muted-foreground",
+        )}
       >
         Sign in
       </Link>

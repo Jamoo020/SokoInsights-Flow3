@@ -29,7 +29,10 @@ export function PublicHeader() {
           ))}
         </nav>
         <div className="hidden items-center gap-2 md:flex">
-          <Link to="/sign-in" className={"rounded-xl px-4 py-2 text-sm font-semibold text-ink hover:bg-secondary"}>
+          <Link
+            to="/sign-in"
+            className={"rounded-xl px-4 py-2 text-sm font-semibold text-ink hover:bg-secondary"}
+          >
             Sign in
           </Link>
           <Link to="/create-account">
@@ -113,14 +116,17 @@ export function SiteFooter() {
         </div>
         <div className="mt-10 space-y-2 border-t border-border pt-6 text-xs leading-relaxed text-muted-foreground">
           <p>
-            SokoInsights is an independent consumer research platform and is not affiliated with, endorsed by or
-            sponsored by the brands mentioned on the platform.
+            SokoInsights is an independent consumer research platform and is not affiliated with,
+            endorsed by or sponsored by the brands mentioned on the platform.
           </p>
           <p>M-PESA is a trademark of Safaricom PLC.</p>
           <p>
-            Rewards are subject to eligibility, plan limits and survey availability and are not guaranteed.
+            Every completed opinion response confirms Ksh 20. Rewards are processed for 48 hours
+            before becoming eligible.
           </p>
-          <p className="pt-2 font-medium text-ink">© {new Date().getFullYear()} SokoInsights. All rights reserved.</p>
+          <p className="pt-2 font-medium text-ink">
+            © {new Date().getFullYear()} SokoInsights. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

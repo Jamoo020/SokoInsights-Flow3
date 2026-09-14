@@ -2,16 +2,25 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, ClipboardList, LogOut, Lock, Mail, Settings, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Action, EmptyState, Panel, Pill } from "@/components/ui-kit";
 import { ksh, SURVEYS } from "@/lib/data";
-import { useStore } from "@/lib/store";
+import { getRewardBalances, useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/_member/profile")({
   head: () => ({
     meta: [
       { title: "Profile | SokoInsights" },
-      { name: "description", content: "Manage your SokoInsights membership, plan and account settings." },
+      {
+        name: "description",
+        content: "Manage your SokoInsights membership, plan and account settings.",
+      },
       { property: "og:title", content: "Profile | SokoInsights" },
       { property: "og:description", content: "Your membership, plan and account settings." },
     ],
@@ -38,6 +47,7 @@ const MODAL_COPY: Record<Exclude<ModalKey, null>, { title: string; body: string 
 
 function Profile() {
   const { state, signOut } = useStore();
+  const balances = getRewardBalances(state);
   const navigate = useNavigate();
   const [modal, setModal] = useState<ModalKey>(null);
 
@@ -64,8 +74,12 @@ function Profile() {
               {initials || "PK"}
             </span>
             <div className="min-w-0">
-              <h1 className="truncate text-2xl font-extrabold tracking-tight sm:text-3xl">{name}</h1>
-              <p className="truncate text-sm text-primary-foreground/80">{state.user?.phone || "Phone not set"}</p>
+              <h1 className="truncate text-2xl font-extrabold tracking-tight sm:text-3xl">
+                {name}
+              </h1>
+              <p className="truncate text-sm text-primary-foreground/80">
+                {state.user?.phone || "Phone not set"}
+              </p>
               <div className="mt-2">
                 <Pill tone="inverted">Current plan: {state.plan}</Pill>
               </div>
@@ -83,16 +97,18 @@ function Profile() {
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Panel className="p-5">
-          <p className="text-sm font-medium text-muted-foreground">Balance</p>
-          <p className="mt-1 text-2xl font-extrabold text-ink">{ksh(state.balance)}</p>
+          <p className="text-sm font-medium text-muted-foreground">Confirmed earnings</p>
+          <p className="mt-1 text-2xl font-extrabold text-ink">{ksh(state.confirmedEarnings)}</p>
         </Panel>
         <Panel className="p-5">
-          <p className="text-sm font-medium text-muted-foreground">Lifetime earned</p>
-          <p className="mt-1 text-2xl font-extrabold text-ink">{ksh(state.lifetimeEarned)}</p>
+          <p className="text-sm font-medium text-muted-foreground">Withdrawable balance</p>
+          <p className="mt-1 text-2xl font-extrabold text-ink">{ksh(balances.withdrawable)}</p>
         </Panel>
         <Panel className="p-5">
           <p className="text-sm font-medium text-muted-foreground">Surveys completed</p>
-          <p className="mt-1 text-2xl font-extrabold text-ink">{state.completedSurveys.length} / {SURVEYS.length}</p>
+          <p className="mt-1 text-2xl font-extrabold text-ink">
+            {state.completedSurveys.length} / {SURVEYS.length}
+          </p>
         </Panel>
       </section>
 
@@ -150,10 +166,18 @@ function Profile() {
               </div>
             </li>
             <li>
-              <ActionRow icon={<Lock className="size-4" />} label="Privacy & security" onClick={() => setModal("privacy")} />
+              <ActionRow
+                icon={<Lock className="size-4" />}
+                label="Privacy & security"
+                onClick={() => setModal("privacy")}
+              />
             </li>
             <li>
-              <ActionRow icon={<Settings className="size-4" />} label="Settings" onClick={() => setModal("settings")} />
+              <ActionRow
+                icon={<Settings className="size-4" />}
+                label="Settings"
+                onClick={() => setModal("settings")}
+              />
             </li>
             <li>
               <button
@@ -183,7 +207,9 @@ function Profile() {
                 <DialogTitle className="text-xl font-extrabold tracking-tight text-ink">
                   {MODAL_COPY[modal].title}
                 </DialogTitle>
-                <DialogDescription className="leading-relaxed">{MODAL_COPY[modal].body}</DialogDescription>
+                <DialogDescription className="leading-relaxed">
+                  {MODAL_COPY[modal].body}
+                </DialogDescription>
               </DialogHeader>
               <Action block onClick={() => setModal(null)}>
                 Close

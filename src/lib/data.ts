@@ -3,7 +3,12 @@ import bankingImg from "@/assets/cat-banking.jpg";
 import researchImg from "@/assets/cat-research.jpg";
 import premiumImg from "@/assets/cat-premium.jpg";
 
-export type PlanTier = "Free" | "Basic" | "Standard" | "Standard Plus" | "Premium" | "Premium Plus" | "Platinum";
+export type PlanTier =
+  "Free" | "Basic" | "Standard" | "Standard Plus" | "Premium" | "Premium Plus" | "Platinum";
+
+export const QUESTION_REWARD = 20;
+export const REWARD_PROCESSING_HOURS = 48;
+export const MEMBERSHIP_ACTIVATION_PRICE = 200;
 
 export const PLAN_ORDER: PlanTier[] = [
   "Free",
@@ -37,12 +42,16 @@ export const PLANS: Plan[] = [
   {
     id: "Basic",
     name: "Basic",
-    price: 199,
+    price: MEMBERSHIP_ACTIVATION_PRICE,
     tagline: "Start with entry-level research",
-    features: ["Access to Basic survey category", "Profile verification", "M-PESA payouts from Ksh 2,500"],
+    features: [
+      "Access to Basic survey category",
+      "Profile verification",
+      "M-PESA payouts from Ksh 2,500",
+    ],
     surveyLimit: "Up to 10 eligible surveys / month",
     support: "Email support",
-    rewardRange: "Maximum possible reward range: Ksh 1,200 – 8,000 / month",
+    rewardRange: "Ksh 20 per completed question",
   },
   {
     id: "Standard",
@@ -52,7 +61,7 @@ export const PLANS: Plan[] = [
     features: ["Basic + Standard categories", "Priority survey matching", "Weekly payout windows"],
     surveyLimit: "Up to 25 eligible surveys / month",
     support: "Email + WhatsApp support",
-    rewardRange: "Maximum possible reward range: Ksh 3,000 – 18,000 / month",
+    rewardRange: "Ksh 20 per completed question",
   },
   {
     id: "Standard Plus",
@@ -62,7 +71,7 @@ export const PLANS: Plan[] = [
     features: ["Basic + Standard categories", "Extra banking research", "Faster payout processing"],
     surveyLimit: "Up to 35 eligible surveys / month",
     support: "Priority email + WhatsApp",
-    rewardRange: "Maximum possible reward range: Ksh 4,000 – 24,000 / month",
+    rewardRange: "Ksh 20 per completed question",
     badge: "Best Value",
   },
   {
@@ -73,7 +82,7 @@ export const PLANS: Plan[] = [
     features: ["All survey categories", "Premium brand studies", "Same-day payout review"],
     surveyLimit: "Up to 50 eligible surveys / month",
     support: "Dedicated support line",
-    rewardRange: "Maximum possible reward range: Ksh 8,000 – 40,000 / month",
+    rewardRange: "Ksh 20 per completed question",
   },
   {
     id: "Premium Plus",
@@ -83,7 +92,7 @@ export const PLANS: Plan[] = [
     features: ["All categories", "Longer high-value studies", "Early access to new research"],
     surveyLimit: "Up to 70 eligible surveys / month",
     support: "Dedicated support line",
-    rewardRange: "Maximum possible reward range: Ksh 10,000 – 52,000 / month",
+    rewardRange: "Ksh 20 per completed question",
   },
   {
     id: "Platinum",
@@ -93,7 +102,7 @@ export const PLANS: Plan[] = [
     features: ["All categories", "Invite-only panels", "Fastest payout review"],
     surveyLimit: "Unlimited eligible surveys",
     support: "Account manager",
-    rewardRange: "Maximum possible reward range: Ksh 15,000 – 76,000 / month",
+    rewardRange: "Ksh 20 per completed question",
     badge: "Best Deal",
   },
 ];

@@ -12,7 +12,8 @@ export const Route = createFileRoute("/sign-in")({
       { title: "Sign in | SokoInsights" },
       {
         name: "description",
-        content: "Sign in to your SokoInsights member account to access surveys, your wallet and subscription plan.",
+        content:
+          "Sign in to your SokoInsights member account to access surveys, your wallet and subscription plan.",
       },
       { property: "og:title", content: "Sign in | SokoInsights" },
       { property: "og:description", content: "Access your surveys, wallet and subscription plan." },
@@ -33,7 +34,8 @@ function SignIn() {
     e.preventDefault();
     const next: typeof errors = {};
     if (!form.email.trim()) next.email = "Enter your email address.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = "Enter a valid email address.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      next.email = "Enter a valid email address.";
     if (!form.password) next.password = "Enter your password.";
     else if (form.password.length < 6) next.password = "Password must be at least 6 characters.";
     setErrors(next);
@@ -65,7 +67,6 @@ function SignIn() {
       }
       navigate({ to: (target as "/app") ?? "/app" });
     }, 900);
-
   };
 
   return (
@@ -74,7 +75,10 @@ function SignIn() {
         <AuthTabs active="signin" />
         <form className="mt-6 space-y-4" onSubmit={submit} noValidate>
           {errors.form && (
-            <p role="alert" className="rounded-xl bg-destructive/10 p-3 text-sm font-medium text-destructive">
+            <p
+              role="alert"
+              className="rounded-xl bg-destructive/10 p-3 text-sm font-medium text-destructive"
+            >
               {errors.form}
             </p>
           )}

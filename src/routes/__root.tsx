@@ -14,7 +14,6 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { StoreProvider } from "../lib/store";
 import { Toaster } from "../components/ui/sonner";
 
-
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -84,13 +83,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "SokoInsights is a Kenyan consumer research platform where members share their opinions through surveys and receive eligible rewards for qualifying participation.",
+          "SokoInsights is a Kenyan consumer research platform where members answer opinion questions for Ksh 20 confirmed per completed response.",
       },
       { name: "author", content: "SokoInsights" },
       { property: "og:title", content: "SokoInsights — Your voice. Better market insights." },
       {
         property: "og:description",
-        content: "Join a Kenyan consumer research community. Rewards vary and are subject to eligibility.",
+        content:
+          "Answer opinion questions for Ksh 20 confirmed per completed response. Rewards become eligible within 48 hours.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -143,4 +143,3 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
-
