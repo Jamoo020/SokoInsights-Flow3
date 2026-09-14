@@ -5,7 +5,6 @@ import {
   CATEGORY_IMAGES,
   CATEGORY_LABELS,
   ksh,
-  QUESTION_REWARD,
   SURVEYS,
   type CategoryId,
 } from "@/lib/data";
@@ -73,7 +72,7 @@ function Categories() {
                     {CATEGORY_LABELS[cat]}
                   </h2>
                   <p className="text-sm font-semibold text-primary-foreground/85">
-                    {ksh(QUESTION_REWARD)} per completed question · eligible within 48 hours
+                    Variable rewards per completed question · eligible within 48 hours
                   </p>
                 </div>
               </div>
@@ -93,7 +92,7 @@ function Categories() {
                           </p>
                         </div>
                         <span className="shrink-0 text-sm font-bold text-accent-foreground">
-                          {ksh(QUESTION_REWARD)} / question
+                          {ksh(s.rewardPerQuestion)} / question
                         </span>
                         <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                       </button>

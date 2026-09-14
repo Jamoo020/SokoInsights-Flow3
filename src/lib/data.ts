@@ -97,7 +97,7 @@ export type Topic = {
 
 export type Survey = Topic;
 
-function qs(topic: string): Question[] {
+function qs(topic: string, questionCount: number): Question[] {
   const base: Question[] = [
     {
       id: "q1",
@@ -140,7 +140,16 @@ function qs(topic: string): Question[] {
       options: ["In person", "Phone call", "App or chat", "Social media"],
     },
   ];
-  return base;
+  return base.slice(0, questionCount);
+}
+
+function topicVariant(title: string) {
+  const hash = [...title].reduce((value, character) => (value * 31 + character.charCodeAt(0)) >>> 0, 7);
+  const rewards = [15, 20, 25, 30];
+  return {
+    questionCount: 5 + (hash % 4),
+    rewardPerQuestion: rewards[Math.floor(hash / 4) % rewards.length]!,
+  };
 }
 
 const topicSeeds: Array<[string, CategoryId, number]> = [
@@ -154,7 +163,8 @@ const topicSeeds: Array<[string, CategoryId, number]> = [
 ];
 
 export const SURVEYS: Survey[] = topicSeeds.map(([title, category, minutes], index) => {
-  const questionSet = qs(title);
+  const variant = topicVariant(title);
+  const questionSet = qs(title, variant.questionCount);
   return {
     id: `topic-${index + 1}`,
     title,
@@ -166,8 +176,8 @@ export const SURVEYS: Survey[] = topicSeeds.map(([title, category, minutes], ind
     questions: questionSet.length,
     questionCount: questionSet.length,
     minutes,
-    maxReward: questionSet.length * QUESTION_REWARD,
-    rewardPerQuestion: QUESTION_REWARD,
+    maxReward: questionSet.length * variant.rewardPerQuestion,
+    rewardPerQuestion: variant.rewardPerQuestion,
     questionSet,
   };
 });
