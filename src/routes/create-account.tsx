@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AuthLayout, AuthTabs } from "@/components/auth-layout";
 import { Action, FieldError, inputClass } from "@/components/ui-kit";
-import { isKenyanPhone } from "@/lib/data";
+import { isKenyanPhone, ksh, QUESTION_REWARDS } from "@/lib/data";
 import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/create-account")({
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/create-account")({
       {
         property: "og:description",
         content:
-          "Answer opinion questions for Ksh 20 confirmed per response. Rewards become eligible within 48 hours.",
+          `Answer opinion questions with rewards ranging from ${ksh(QUESTION_REWARDS[0])} to ${ksh(QUESTION_REWARDS[QUESTION_REWARDS.length - 1])} per response. Rewards become eligible within 48 hours.`,
       },
     ],
   }),
@@ -152,8 +152,8 @@ function CreateAccount() {
           </Action>
           <p className="text-center text-xs leading-relaxed text-muted-foreground">
             By creating an account you agree to the SokoInsights terms of membership and privacy
-            notice. Topics and questions are free. Completed opinion responses confirm Ksh 20 and
-            become eligible within 48 hours; membership activation is required only before withdrawal.
+            notice. Topics and questions are free. Completed opinion responses confirm the displayed
+            reward and become eligible within 48 hours; membership activation is required only before withdrawal.
           </p>
         </form>
       </div>

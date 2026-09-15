@@ -1,24 +1,25 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, BadgeCheck } from "lucide-react";
+import { ArrowLeft, Clock3, Layers3, WalletCards } from "lucide-react";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/brand";
 import { Pill } from "@/components/ui-kit";
+import { ksh, QUESTION_REWARDS } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 const benefits = [
-  "Verified brand partners",
-  "M-PESA STK push withdrawals",
-  "Ksh 20 confirmed per question",
+  { icon: Layers3, label: "Browse a growing library of topics" },
+  { icon: Clock3, label: "Responses process within 48 hours" },
+  { icon: WalletCards, label: "Withdraw eligible rewards to M-PESA" },
 ];
 
 export function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-hidden bg-background">
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 bg-[radial-gradient(60%_50%_at_0%_0%,var(--accent-soft),transparent_60%),radial-gradient(60%_50%_at_100%_100%,var(--primary-soft),transparent_65%)]"
       />
-      <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-6">
+      <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6">
         <div className="flex items-center justify-between">
           <Logo />
           <Link
@@ -29,31 +30,46 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           </Link>
         </div>
 
-        <div className="mt-8 grid gap-10 pb-16 lg:grid-cols-2 lg:items-center lg:gap-16">
+        <div className="mt-10 grid gap-10 pb-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(25rem,0.8fr)] lg:items-center lg:gap-20">
           <section className="order-2 lg:order-1">
-            <Pill tone="accent">Join 42,000+ earners</Pill>
-            <h1 className="mt-5 text-4xl font-extrabold leading-[1.1] tracking-tight text-ink sm:text-5xl">
-              Your opinion is worth{" "}
-              <span className="text-primary underline decoration-accent decoration-4 underline-offset-4">
-                real shillings
-              </span>
-              .
+            <Pill tone="accent">Kenyan consumer research</Pill>
+            <h1 className="mt-5 max-w-xl text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-6xl">
+              Share what you know.
+              <span className="mt-1 block text-primary">Shape what comes next.</span>
             </h1>
-            <p className="mt-5 max-w-lg text-base leading-relaxed text-muted-foreground">
-              Create your SokoInsights account to answer opinion questions, track confirmed earnings
-              and withdraw eligible rewards to M-PESA after membership activation.
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Join SokoInsights to explore everyday topics, answer opinion questions and keep track
+              of confirmed rewards in one clear member space.
             </p>
-            <ul className="mt-6 space-y-3">
-              {benefits.map((b) => (
-                <li key={b} className="flex items-start gap-2.5 text-sm font-semibold text-ink">
-                  <BadgeCheck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
-                  {b}
+            <div className="mt-8 grid max-w-xl grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
+              <div className="rounded-2xl border border-border bg-card/80 p-3 shadow-soft sm:p-4">
+                <p className="whitespace-nowrap text-xl font-extrabold tracking-tight text-ink sm:text-xl">
+                  {ksh(QUESTION_REWARDS[0])}-{ksh(QUESTION_REWARDS[QUESTION_REWARDS.length - 1])}
+                </p>
+                <p className="mt-1 text-xs font-semibold leading-tight text-muted-foreground">per completed question</p>
+              </div>
+              <div className="rounded-2xl border border-border bg-card/80 p-3 shadow-soft sm:p-4">
+                <p className="text-xl font-extrabold text-ink sm:text-2xl">48h</p>
+                <p className="mt-1 text-xs font-semibold leading-tight text-muted-foreground">processing window</p>
+              </div>
+              <div className="rounded-2xl border border-border bg-card/80 p-3 shadow-soft sm:p-4">
+                <p className="text-xl font-extrabold text-ink sm:text-2xl">M-PESA</p>
+                <p className="mt-1 text-xs font-semibold leading-tight text-muted-foreground">eligible withdrawals</p>
+              </div>
+            </div>
+            <ul className="mt-8 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+              {benefits.map(({ icon: Icon, label }) => (
+                <li key={label} className="flex items-center gap-2.5 text-sm font-semibold text-ink">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary-soft text-primary">
+                    <Icon className="size-4" aria-hidden="true" />
+                  </span>
+                  {label}
                 </li>
               ))}
             </ul>
-            <p className="mt-6 max-w-lg rounded-xl border border-border bg-card/70 p-4 text-xs leading-relaxed text-muted-foreground">
-              Every completed opinion response confirms Ksh 20 immediately. Rewards are processed
-              and become eligible within 48 hours before membership-gated withdrawal.
+            <p className="mt-8 max-w-xl border-l-2 border-accent pl-4 text-xs leading-relaxed text-muted-foreground">
+              Topics and questions are free to access. Membership is only needed when you are ready
+              to withdraw eligible rewards.
             </p>
           </section>
 
