@@ -4,6 +4,7 @@ import researchImg from "@/assets/cat-research.jpg";
 import premiumImg from "@/assets/cat-premium.jpg";
 
 export const QUESTION_REWARD = 20;
+export const QUESTION_REWARDS = [15, 20, 25, 30] as const;
 export const REWARD_PROCESSING_HOURS = 48;
 export const MEMBERSHIP_ACTIVATION_PRICE = 200;
 export type CategoryId =
@@ -81,6 +82,7 @@ export type QuestionOption = {
 
 export type Question = {
   id: string;
+  reward: number;
   prompt: string;
   questionType: "multiple_choice" | "likert" | "frequency" | "multi_select";
   optionOrder: "fixed" | "random";
@@ -109,7 +111,7 @@ export type Topic = {
 export type Survey = Topic;
 
 function qs(topic: string, questionCount: number): Question[] {
-  const base: Array<Omit<Question, "options"> & { options: string[] }> = [
+  const base: Array<Omit<Question, "options" | "reward"> & { options: string[] }> = [
     {
       id: "q1",
       prompt: `How often do you engage with ${topic}?`,
@@ -175,13 +177,20 @@ function qs(topic: string, questionCount: number): Question[] {
       options: ["In person", "Phone call", "App or chat", "Social media"],
     },
   ];
-  return base.slice(0, questionCount).map((question) => ({
-    ...question,
-    options: question.options.map((label, index) => ({
-      id: `${question.id}-option-${index + 1}`,
-      label,
-    })),
-  }));
+  return base.slice(0, questionCount).map((question, index) => {
+    const rewardIndex = [...`${topic}:${question.id}`].reduce(
+      (value, character) => (value * 31 + character.charCodeAt(0)) >>> 0,
+      index + 11,
+    ) % QUESTION_REWARDS.length;
+    return {
+      ...question,
+      reward: QUESTION_REWARDS[rewardIndex]!,
+      options: question.options.map((label, optionIndex) => ({
+        id: `${question.id}-option-${optionIndex + 1}`,
+        label,
+      })),
+    };
+  });
 }
 
 function topicVariant(title: string) {
@@ -215,7 +224,7 @@ export const SURVEYS: Survey[] = topicSeeds.map(([title, category, minutes], ind
     questions: questionSet.length,
     questionCount: questionSet.length,
     minutes,
-    maxReward: questionSet.length * QUESTION_REWARD,
+    maxReward: questionSet.reduce((total, question) => total + question.reward, 0),
     rewardPerQuestion: QUESTION_REWARD,
     questionSet,
   };

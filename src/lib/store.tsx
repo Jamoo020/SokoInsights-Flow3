@@ -219,7 +219,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             attemptId,
             surveyId: survey.id,
             questionId,
-            amount: survey.rewardPerQuestion ?? QUESTION_REWARD,
+            amount: survey.questionSet.find((question) => question.id === questionId)?.reward ?? QUESTION_REWARD,
             confirmedAt: now.toISOString(),
             eligibleAt: new Date(
               now.getTime() + REWARD_PROCESSING_HOURS * 60 * 60 * 1000,

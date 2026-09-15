@@ -36,6 +36,8 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
         .map((optionId) => question.options.find((option) => option.id === optionId))
         .filter((option): option is NonNullable<typeof option> => Boolean(option))
     : [];
+  const totalReward = orderedQuestions.reduce((totalAmount, currentQuestion) => totalAmount + currentQuestion.reward, 0);
+  const questionReward = question?.reward ?? survey?.rewardPerQuestion ?? 20;
 
   useEffect(() => {
     if (!survey || !attempt) {
@@ -66,7 +68,7 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
     confirmQuestion(survey, attempt.attemptId, question.id, answer);
     setConfirmation({ questionNumber: step + 1, total });
     toast.success("Reward confirmed", {
-      description: `+${ksh(survey.rewardPerQuestion)} added to your earnings.`,
+      description: `+${ksh(questionReward)} added to your earnings.`,
     });
   };
 
@@ -102,11 +104,11 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
             <p className="mt-4 text-lg font-extrabold text-ink">Task completed</p>
             <p className="mt-1 text-sm text-muted-foreground">{total} questions answered</p>
             <p className="mt-3 text-2xl font-extrabold text-accent-foreground">
-              {ksh(total * survey.rewardPerQuestion)} confirmed
+              {ksh(totalReward)} confirmed
             </p>
             <p className="mt-2 text-sm font-semibold text-muted-foreground">Status: Processing</p>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Your {ksh(total * survey.rewardPerQuestion)} reward has been confirmed and will become eligible
+              Your {ksh(totalReward)} reward has been confirmed and will become eligible
               within 48 hours.
             </p>
             <div className="mt-6">
@@ -122,7 +124,7 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
             </span>
             <p className="mt-4 text-lg font-extrabold text-ink">Reward confirmed</p>
             <p className="mt-2 text-3xl font-extrabold text-accent-foreground">
-              +{ksh(survey.rewardPerQuestion)}
+              +{ksh(questionReward)}
             </p>
               <p className="mt-1 text-sm text-muted-foreground">Added to your earnings.</p>
             <p className="mt-4 text-sm font-semibold text-ink">
@@ -154,7 +156,7 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
             <fieldset>
               <legend className="text-base font-bold text-ink">{question.prompt}</legend>
               <p className="mt-1 text-sm text-muted-foreground">
-                There are no right or wrong answers. Every completed opinion response confirms {ksh(survey.rewardPerQuestion)}.
+                There are no right or wrong answers. This completed opinion response confirms {ksh(questionReward)}.
               </p>
               <div className="mt-4 space-y-2">
                 {orderedOptions.map((option) => (
