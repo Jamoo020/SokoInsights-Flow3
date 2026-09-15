@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   BadgeCheck,
-  Clock,
   CreditCard,
   ShieldCheck,
   Smartphone,
@@ -11,7 +10,7 @@ import {
 import heroImg from "@/assets/hero-kenya.jpg";
 import { PublicHeader, SiteFooter } from "@/components/public-chrome";
 import { Action, Panel, Pill, SectionHeading } from "@/components/ui-kit";
-import { CATEGORY_LABELS, ksh, SURVEYS, surveyImage } from "@/lib/data";
+import { CATEGORY_IMAGES, CATEGORY_LABELS, SURVEYS, type CategoryId } from "@/lib/data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -46,8 +45,8 @@ const steps = [
   },
   {
     n: "03",
-    title: "Answer and earn",
-    body: "Every completed question confirms Ksh 20 immediately, then processes for 48 hours.",
+    title: "Answer and get confirmation",
+    body: "Share your opinion freely. Completed responses are confirmed immediately and then processed for 48 hours.",
   },
 ];
 
@@ -60,8 +59,8 @@ const trust = [
   },
   {
     icon: Wallet,
-    title: "Rewards are fixed",
-    body: "Every successfully completed opinion question confirms Ksh 20 immediately.",
+    title: "Clear reward process",
+    body: "Completed opinion questions receive the configured reward immediately, then move through processing.",
     points: [
       "Ksh 20 per question",
       "Confirmed immediately",
@@ -73,12 +72,45 @@ const trust = [
     icon: ShieldCheck,
     title: "Your data",
     body: "Member information is collected for legitimate platform purposes only.",
-    points: ["Account verification", "Survey eligibility", "Reward delivery"],
+    points: ["Account verification", "Topic access", "Reward delivery"],
   },
 ];
 
+const categoryDescriptions: Record<CategoryId, string> = {
+  telecom: "Mobile connectivity, data habits and everyday communication.",
+  banking: "Banking services, saving habits and digital financial tools.",
+  finance: "Household money decisions, planning and financial priorities.",
+  shopping: "How people compare, choose and purchase everyday goods.",
+  food: "Food, drinks, dining preferences and everyday consumption.",
+  technology: "Devices, digital tools and technology choices in daily life.",
+  transport: "Commuting, public transport and mobility experiences.",
+  automotive: "Vehicle ownership, maintenance and driving-related habits.",
+  healthcare: "Healthcare access, wellness routines and pharmacy experiences.",
+  education: "Learning, skills development and education experiences.",
+  entertainment: "Streaming, leisure and the ways people spend free time.",
+  travel: "Travel planning, local trips and holiday preferences.",
+  ecommerce: "Online shopping, deliveries and digital buying experiences.",
+  apps: "Mobile applications, digital services and app experiences.",
+  "consumer-products": "Brands, household products and purchase decisions.",
+  agriculture: "Agricultural products, inputs and rural consumer needs.",
+  housing: "Renting, home improvement and household living experiences.",
+  insurance: "Insurance awareness, protection and financial confidence.",
+  energy: "Energy access, household usage and service experiences.",
+  beauty: "Beauty, personal care and product preferences.",
+  sports: "Sports participation, fitness and active lifestyles.",
+  media: "News, social platforms and everyday media habits.",
+  employment: "Work, careers, workplace benefits and job-search experiences.",
+  lifestyle: "Kenyan routines, priorities and changing everyday lifestyles.",
+  "public-services": "Public services, access and digital government experiences.",
+  research: "Research participation, opinions and community perspectives.",
+  premium: "Focused research on high-interest products and services.",
+};
+
 function Landing() {
-  const featured = SURVEYS.slice(0, 6);
+  const categories = (Object.keys(CATEGORY_LABELS) as CategoryId[]).map((category) => ({
+    category,
+    topicCount: SURVEYS.filter((survey) => survey.category === category).length,
+  }));
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -97,8 +129,8 @@ function Landing() {
                 Share your opinion on the brands you already use.
               </h1>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Explore research topics, share your opinions and earn Ksh 20 for every completed
-                question. Rewards are confirmed as you answer and become eligible within 48 hours.
+                Explore research topics, share your opinions and receive confirmation for each
+                completed response. Rewards become eligible after the processing period.
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link to="/sign-in">
@@ -113,7 +145,7 @@ function Landing() {
                 </Link>
               </div>
               <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-ink">
-                {["Free topics", "Ksh 20 per question", "Membership unlocks withdrawals"].map((t) => (
+                {["Free topics", "Opinion-led research", "Membership unlocks withdrawals"].map((t) => (
                   <li key={t} className="flex items-center gap-2">
                     <BadgeCheck className="size-4 text-primary" aria-hidden="true" />
                     {t}
@@ -147,7 +179,7 @@ function Landing() {
             <SectionHeading
               eyebrow="How it works"
               title="A simple, transparent process."
-              description="Three steps from signing up to completing your first eligible survey."
+              description="Three steps from signing up to completing your first research topic."
             />
             <div className="mt-10 grid gap-5 md:grid-cols-3">
               {steps.map((s) => (
@@ -163,57 +195,50 @@ function Landing() {
           </div>
         </section>
 
-        {/* Surveys */}
+        {/* Research topics */}
         <section id="surveys" className="scroll-mt-20 bg-secondary/40 py-16 lg:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <SectionHeading
-              eyebrow="Categories"
-              title="Categories our members research."
-              description="Browse a growing library of free topics across Kenyan consumer categories."
+              eyebrow="Research topics"
+              title="Explore Research Topics"
+              description="Share your opinions across the topics, brands, products and services that matter to everyday life in Kenya."
             />
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {featured.map((survey) => (
-                <article
-                  key={survey.id}
-                  className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft"
+              {categories.map(({ category, topicCount }) => (
+                <Link
+                  key={category}
+                  to="/sign-in"
+                  className="group flex min-h-72 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition-shadow hover:shadow-lift focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                 >
-                  <div className="aspect-[16/9] overflow-hidden bg-secondary">
+                  <div className="relative aspect-[16/9] overflow-hidden bg-secondary">
                     <img
-                      src={surveyImage(survey)}
-                      alt={`${CATEGORY_LABELS[survey.category]} research`}
+                      src={CATEGORY_IMAGES[category]}
+                      alt={`${CATEGORY_LABELS[category]} research topics`}
                       loading="lazy"
                       width={1024}
                       height={704}
-                      className="size-full object-cover"
+                      className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/75 to-transparent" />
+                    <Pill tone="inverted" className="absolute bottom-4 left-4">
+                      {topicCount} {topicCount === 1 ? "topic" : "topics"}
+                    </Pill>
                   </div>
                   <div className="flex flex-1 flex-col p-5">
-                    <Pill tone="accent" className="self-start">
-                      Free topic · {ksh(survey.maxReward)} total
-                    </Pill>
-                    <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                      {CATEGORY_LABELS[survey.category]}
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                      Research category
                     </p>
-                    <h3 className="mt-1 text-lg font-extrabold tracking-tight text-ink">
-                      {survey.title}
+                    <h3 className="mt-1 text-xl font-extrabold tracking-tight text-ink">
+                      {CATEGORY_LABELS[category]}
                     </h3>
-                    <p className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
-                      <Clock className="size-4" aria-hidden="true" />
-                      {survey.questions} questions · about {survey.minutes} minutes
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                      {categoryDescriptions[category]}
                     </p>
-                    <p className="mt-3 text-sm font-semibold text-ink">
-                      <span className="text-accent-foreground">Ksh 20 per question</span> · eligible
-                      within 48 hours
-                    </p>
-                    <div className="mt-5 pt-1">
-                      <Link to="/sign-in">
-                        <Action block variant="outline">
-                          Sign in <ArrowRight className="size-4" aria-hidden="true" />
-                        </Action>
-                      </Link>
-                    </div>
+                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary">
+                      Explore topics <ArrowRight className="size-4" aria-hidden="true" />
+                    </span>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           </div>

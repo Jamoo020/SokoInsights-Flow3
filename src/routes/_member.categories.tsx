@@ -4,8 +4,6 @@ import { Pill } from "@/components/ui-kit";
 import {
   CATEGORY_IMAGES,
   CATEGORY_LABELS,
-  ksh,
-  QUESTION_REWARD,
   SURVEYS,
   type CategoryId,
 } from "@/lib/data";
@@ -73,7 +71,7 @@ function Categories() {
                     {CATEGORY_LABELS[cat]}
                   </h2>
                   <p className="text-sm font-semibold text-primary-foreground/85">
-                    {ksh(QUESTION_REWARD)} per completed question · eligible within 48 hours
+                    Browse topics freely and share your perspective
                   </p>
                 </div>
               </div>
@@ -89,11 +87,11 @@ function Categories() {
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-bold text-ink">{s.title}</p>
                           <p className="mt-0.5 text-xs text-muted-foreground">
-                            {s.questions} questions · {s.minutes} min · {ksh(s.maxReward)} total
+                            {s.questions} questions · about {s.minutes} minutes
                           </p>
                         </div>
-                        <span className="shrink-0 text-sm font-bold text-accent-foreground">
-                          {ksh(s.rewardPerQuestion)} / question
+                        <span className="shrink-0 text-sm font-bold text-primary">
+                          Explore
                         </span>
                         <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                       </button>

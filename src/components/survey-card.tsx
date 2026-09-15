@@ -1,6 +1,6 @@
 import { ArrowRight, CheckCircle2, Clock } from "lucide-react";
 import { Action, Pill } from "@/components/ui-kit";
-import { CATEGORY_LABELS, ksh, surveyImage, type Survey } from "@/lib/data";
+import { CATEGORY_LABELS, surveyImage, type Survey } from "@/lib/data";
 
 export function SurveyCard({
   survey,
@@ -47,8 +47,7 @@ export function SurveyCard({
           {survey.questions} questions · about {survey.minutes} minutes
         </p>
         <p className="mt-3 text-sm font-semibold text-ink">
-          <span className="text-accent-foreground">{ksh(survey.rewardPerQuestion)} per question</span> ·
-          confirmed after each answer
+          Short opinion study · share your perspective
         </p>
         <div className="mt-5 pt-1">
           <Action
