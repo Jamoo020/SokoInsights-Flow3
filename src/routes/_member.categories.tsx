@@ -90,13 +90,15 @@ function Categories() {
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-bold text-ink">{s.title}</p>
                           <p className="mt-0.5 text-xs text-muted-foreground">
-                            {s.questions} questions · about {s.minutes} minutes · {ksh(rewardRange.min)}-{ksh(rewardRange.max)} per question
+                            {s.questions} questions · about {s.minutes} minutes ·{" "}
+                            {ksh(rewardRange.min)}-{ksh(rewardRange.max)} per question
                           </p>
                         </div>
-                        <span className="shrink-0 text-sm font-bold text-primary">
-                          Explore
-                        </span>
-                        <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                        <span className="shrink-0 text-sm font-bold text-primary">Explore</span>
+                        <ArrowRight
+                          className="size-4 shrink-0 text-muted-foreground"
+                          aria-hidden="true"
+                        />
                       </button>
                     </li>
                   );

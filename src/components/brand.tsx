@@ -27,7 +27,10 @@ export function Logo({
   return (
     <Link
       to={to}
-      className={cn("flex items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring", className)}
+      className={cn(
+        "flex items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring",
+        className,
+      )}
       aria-label="SokoInsights home"
     >
       <LogoMark className={inverted ? "bg-primary-foreground" : undefined} />

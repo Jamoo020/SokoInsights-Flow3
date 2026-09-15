@@ -30,7 +30,16 @@ export const actionVariants = cva(
 type ActionProps = ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof actionVariants> & { loading?: boolean };
 
-export function Action({ className, variant, size, block, loading, children, disabled, ...props }: ActionProps) {
+export function Action({
+  className,
+  variant,
+  size,
+  block,
+  loading,
+  children,
+  disabled,
+  ...props
+}: ActionProps) {
   return (
     <button
       className={cn(actionVariants({ variant, size, block }), className)}
@@ -92,9 +101,15 @@ export function SectionHeading({
 }) {
   return (
     <div className={cn("max-w-2xl", className)}>
-      {eyebrow && <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent-foreground">{eyebrow}</p>}
+      {eyebrow && (
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent-foreground">
+          {eyebrow}
+        </p>
+      )}
       <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">{title}</h2>
-      {description && <p className="mt-3 text-base leading-relaxed text-muted-foreground">{description}</p>}
+      {description && (
+        <p className="mt-3 text-base leading-relaxed text-muted-foreground">{description}</p>
+      )}
     </div>
   );
 }
@@ -112,7 +127,10 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center rounded-2xl border border-dashed border-border bg-secondary/40 px-6 py-12 text-center">
-      <span className="grid size-12 place-items-center rounded-full bg-primary-soft text-primary" aria-hidden="true">
+      <span
+        className="grid size-12 place-items-center rounded-full bg-primary-soft text-primary"
+        aria-hidden="true"
+      >
         {icon}
       </span>
       <p className="mt-4 text-base font-semibold text-ink">{title}</p>

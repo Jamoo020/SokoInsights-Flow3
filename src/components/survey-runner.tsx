@@ -23,20 +23,26 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
   } | null>(null);
   const [taskComplete, setTaskComplete] = useState(false);
 
+  const answeringLocked = state.confirmedEarnings >= 700 && state.membershipStatus !== "active";
   const attempt = survey ? state.surveyAttempts[survey.id] : null;
-  const orderedQuestions = attempt && survey
-    ? attempt.questionOrder
-        .map((questionId) => survey.questionSet.find((candidate) => candidate.id === questionId))
-        .filter((question): question is NonNullable<typeof question> => Boolean(question))
-    : [];
+  const orderedQuestions =
+    attempt && survey
+      ? attempt.questionOrder
+          .map((questionId) => survey.questionSet.find((candidate) => candidate.id === questionId))
+          .filter((question): question is NonNullable<typeof question> => Boolean(question))
+      : [];
   const total = orderedQuestions.length;
   const question = orderedQuestions[Math.min(step, Math.max(total - 1, 0))];
-  const orderedOptions = question && attempt
-    ? attempt.optionOrderByQuestion[question.id]
-        .map((optionId) => question.options.find((option) => option.id === optionId))
-        .filter((option): option is NonNullable<typeof option> => Boolean(option))
-    : [];
-  const totalReward = orderedQuestions.reduce((totalAmount, currentQuestion) => totalAmount + currentQuestion.reward, 0);
+  const orderedOptions =
+    question && attempt
+      ? attempt.optionOrderByQuestion[question.id]
+          .map((optionId) => question.options.find((option) => option.id === optionId))
+          .filter((option): option is NonNullable<typeof option> => Boolean(option))
+      : [];
+  const totalReward = orderedQuestions.reduce(
+    (totalAmount, currentQuestion) => totalAmount + currentQuestion.reward,
+    0,
+  );
   const questionReward = question?.reward ?? survey?.rewardPerQuestion ?? 20;
 
   useEffect(() => {
@@ -53,8 +59,6 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
     setTaskComplete(attempt.currentQuestionIndex >= total);
   }, [attempt?.attemptId, survey?.id, total]);
 
-  if (!survey || !attempt || !question || total === 0) return null;
-
   const close = () => {
     setStep(0);
     setAnswer([]);
@@ -62,6 +66,40 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
     setTaskComplete(false);
     onClose();
   };
+
+  if (!survey || !attempt || !question || total === 0) return null;
+
+  if (answeringLocked) {
+    return (
+      <Dialog open onOpenChange={(o) => !o && close()}>
+        <DialogContent className="max-w-lg rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-extrabold tracking-tight text-ink">
+              Answering is currently locked
+            </DialogTitle>
+            <DialogDescription>
+              You have reached Ksh 700 in accumulated earnings. Activate your Ksh 250 membership to
+              continue answering questions.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 rounded-2xl bg-secondary p-4 text-sm text-muted-foreground">
+            <p className="font-semibold text-ink">
+              Questions remain visible, but additional answers are temporarily locked.
+            </p>
+            <p>Your accumulated earnings remain recorded and your progress is preserved.</p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Action variant="outline" block onClick={close}>
+              Close
+            </Action>
+            <Action block onClick={() => window.location.assign("/plans")}>
+              Activate Membership — Ksh 250
+            </Action>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const next = () => {
     if (answer.length === 0) return;
@@ -108,8 +146,8 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
             </p>
             <p className="mt-2 text-sm font-semibold text-muted-foreground">Status: Processing</p>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Your {ksh(totalReward)} reward has been confirmed and will become eligible
-              within 48 hours.
+              Your {ksh(totalReward)} reward has been confirmed and added to your accumulated
+              earnings.
             </p>
             <div className="mt-6">
               <Action block onClick={close}>
@@ -126,10 +164,8 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
             <p className="mt-2 text-3xl font-extrabold text-accent-foreground">
               +{ksh(questionReward)}
             </p>
-              <p className="mt-1 text-sm text-muted-foreground">Added to your earnings.</p>
-            <p className="mt-4 text-sm font-semibold text-ink">
-              Processing — eligible within 48 hours
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">Added to your earnings.</p>
+            <p className="mt-4 text-sm font-semibold text-ink">Status: Processing</p>
             <div className="mt-6">
               <Action block onClick={nextQuestion}>
                 {confirmation.questionNumber === total ? "Complete task" : "Next question"}
@@ -156,7 +192,8 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
             <fieldset>
               <legend className="text-base font-bold text-ink">{question.prompt}</legend>
               <p className="mt-1 text-sm text-muted-foreground">
-                There are no right or wrong answers. This completed opinion response confirms {ksh(questionReward)}.
+                There are no right or wrong answers. This completed opinion response confirms{" "}
+                {ksh(questionReward)}.
               </p>
               <div className="mt-4 space-y-2">
                 {orderedOptions.map((option) => (
@@ -176,9 +213,11 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
                       checked={answer.includes(option.id)}
                       onChange={() => {
                         if (question.questionType === "multi_select") {
-                          setAnswer((current) => current.includes(option.id)
-                            ? current.filter((id) => id !== option.id)
-                            : [...current, option.id]);
+                          setAnswer((current) =>
+                            current.includes(option.id)
+                              ? current.filter((id) => id !== option.id)
+                              : [...current, option.id],
+                          );
                         } else {
                           setAnswer([option.id]);
                         }

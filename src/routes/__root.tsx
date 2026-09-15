@@ -83,14 +83,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "SokoInsights is a Kenyan consumer research platform where members answer opinion questions for Ksh 20 confirmed per completed response.",
+          "SokoInsights is a Kenyan consumer research platform where members answer opinion questions for Ksh 50–100 per completed response and continue with membership after Ksh 700.",
       },
       { name: "author", content: "SokoInsights" },
       { property: "og:title", content: "SokoInsights — Your voice. Better market insights." },
       {
         property: "og:description",
         content:
-          "Answer opinion questions for Ksh 20 confirmed per completed response. Rewards become eligible within 48 hours.",
+          "Answer opinion questions for Ksh 50–100 per completed response, unlock with Ksh 250 membership after Ksh 700, and withdraw from Ksh 2,500.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -1,7 +1,13 @@
 import { AlertCircle, CheckCircle2, Loader2, Smartphone, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Action, FieldError, inputClass } from "@/components/ui-kit";
 import { isKenyanPhone, ksh, MEMBERSHIP_ACTIVATION_PRICE } from "@/lib/data";
 import { useStore } from "@/lib/store";
@@ -37,7 +43,9 @@ export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: (
     window.setTimeout(() => {
       setPhase("success");
       activateMembership();
-      toast.success("Membership activated", { description: "Withdrawals are now unlocked for eligible rewards." });
+      toast.success("Membership activated", {
+        description: "Withdrawals are now unlocked for eligible rewards.",
+      });
     }, 3400);
   };
 
@@ -89,7 +97,10 @@ export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: (
         )}
 
         {phase === "loading" && (
-          <StatusRow icon={<Loader2 className="size-5 animate-spin" />} title="Sending STK prompt…" />
+          <StatusRow
+            icon={<Loader2 className="size-5 animate-spin" />}
+            title="Sending STK prompt…"
+          />
         )}
         {phase === "waiting" && (
           <StatusRow
@@ -106,10 +117,18 @@ export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: (
           />
         )}
         {phase === "failed" && (
-          <StatusRow tone="error" icon={<AlertCircle className="size-5" />} title="Payment could not be completed." />
+          <StatusRow
+            tone="error"
+            icon={<AlertCircle className="size-5" />}
+            title="Payment could not be completed."
+          />
         )}
         {phase === "cancelled" && (
-          <StatusRow tone="error" icon={<XCircle className="size-5" />} title="Payment cancelled." />
+          <StatusRow
+            tone="error"
+            icon={<XCircle className="size-5" />}
+            title="Payment cancelled."
+          />
         )}
 
         <div className="flex flex-col gap-2 sm:flex-row">

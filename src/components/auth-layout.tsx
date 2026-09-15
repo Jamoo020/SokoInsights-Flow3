@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 const benefits = [
   { icon: Layers3, label: "Browse a growing library of topics" },
-  { icon: Clock3, label: "Responses process within 48 hours" },
+  { icon: Clock3, label: "Accumulate earnings toward the Ksh 700 milestone" },
   { icon: WalletCards, label: "Withdraw eligible rewards to M-PESA" },
 ];
 
@@ -46,20 +46,29 @@ export function AuthLayout({ children }: { children: ReactNode }) {
                 <p className="whitespace-nowrap text-xl font-extrabold tracking-tight text-ink sm:text-xl">
                   {ksh(QUESTION_REWARDS[0])}-{ksh(QUESTION_REWARDS[QUESTION_REWARDS.length - 1])}
                 </p>
-                <p className="mt-1 text-xs font-semibold leading-tight text-muted-foreground">per completed question</p>
+                <p className="mt-1 text-xs font-semibold leading-tight text-muted-foreground">
+                  per completed question
+                </p>
               </div>
               <div className="rounded-2xl border border-border bg-card/80 p-3 shadow-soft sm:p-4">
-                <p className="text-xl font-extrabold text-ink sm:text-2xl">48h</p>
-                <p className="mt-1 text-xs font-semibold leading-tight text-muted-foreground">processing window</p>
+                <p className="text-xl font-extrabold text-ink sm:text-2xl">Ksh 700</p>
+                <p className="mt-1 text-xs font-semibold leading-tight text-muted-foreground">
+                  milestone to continue
+                </p>
               </div>
               <div className="rounded-2xl border border-border bg-card/80 p-3 shadow-soft sm:p-4">
                 <p className="text-xl font-extrabold text-ink sm:text-2xl">M-PESA</p>
-                <p className="mt-1 text-xs font-semibold leading-tight text-muted-foreground">eligible withdrawals</p>
+                <p className="mt-1 text-xs font-semibold leading-tight text-muted-foreground">
+                  eligible withdrawals
+                </p>
               </div>
             </div>
             <ul className="mt-8 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
               {benefits.map(({ icon: Icon, label }) => (
-                <li key={label} className="flex items-center gap-2.5 text-sm font-semibold text-ink">
+                <li
+                  key={label}
+                  className="flex items-center gap-2.5 text-sm font-semibold text-ink"
+                >
                   <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary-soft text-primary">
                     <Icon className="size-4" aria-hidden="true" />
                   </span>

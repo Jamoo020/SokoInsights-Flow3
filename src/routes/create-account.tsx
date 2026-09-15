@@ -19,8 +19,7 @@ export const Route = createFileRoute("/create-account")({
       { property: "og:title", content: "Create account | SokoInsights" },
       {
         property: "og:description",
-        content:
-          `Answer opinion questions with rewards ranging from ${ksh(QUESTION_REWARDS[0])} to ${ksh(QUESTION_REWARDS[QUESTION_REWARDS.length - 1])} per response. Rewards become eligible within 48 hours.`,
+        content: `Answer opinion questions with rewards ranging from ${ksh(QUESTION_REWARDS[0])} to ${ksh(QUESTION_REWARDS[QUESTION_REWARDS.length - 1])} per response. Membership unlocks after Ksh 700 in accumulated earnings.`,
       },
     ],
   }),
@@ -153,7 +152,8 @@ function CreateAccount() {
           <p className="text-center text-xs leading-relaxed text-muted-foreground">
             By creating an account you agree to the SokoInsights terms of membership and privacy
             notice. Topics and questions are free. Completed opinion responses confirm the displayed
-            reward and become eligible within 48 hours; membership activation is required only before withdrawal.
+            reward and continue accumulating toward the Ksh 700 milestone; membership activation is
+            required to continue answering after that threshold.
           </p>
         </form>
       </div>

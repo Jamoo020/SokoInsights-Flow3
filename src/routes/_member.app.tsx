@@ -8,7 +8,9 @@ import {
   CATEGORY_LABELS,
   ksh,
   MEMBERSHIP_ACTIVATION_PRICE,
+  MEMBERSHIP_MILESTONE,
   SURVEYS,
+  isAnsweringLocked,
   type Survey,
 } from "@/lib/data";
 import { getRewardBalances, useStore } from "@/lib/store";
@@ -39,13 +41,18 @@ function MemberHome() {
 
   const firstName = state.user?.name?.split(" ")[0] ?? "jamaa";
   const balances = getRewardBalances(state);
+  const answeringLocked = isAnsweringLocked(state.confirmedEarnings, state.membershipStatus);
 
   const visible = useMemo(
-    () => SURVEYS.filter((topic) => {
-      const matchesCategory = filter === "All" || CATEGORY_LABELS[topic.category] === filter;
-      const query = search.trim().toLowerCase();
-      return matchesCategory && (!query || `${topic.title} ${topic.description}`.toLowerCase().includes(query));
-    }),
+    () =>
+      SURVEYS.filter((topic) => {
+        const matchesCategory = filter === "All" || CATEGORY_LABELS[topic.category] === filter;
+        const query = search.trim().toLowerCase();
+        return (
+          matchesCategory &&
+          (!query || `${topic.title} ${topic.description}`.toLowerCase().includes(query))
+        );
+      }),
     [filter, search],
   );
 
@@ -68,7 +75,7 @@ function MemberHome() {
             <div className="mt-6 flex flex-wrap items-end gap-x-10 gap-y-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground/70">
-                  Confirmed earnings
+                  Accumulated earnings
                 </p>
                 <p className="text-3xl font-extrabold sm:text-4xl">
                   {ksh(state.confirmedEarnings)}
@@ -78,11 +85,15 @@ function MemberHome() {
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground/70">
                   Membership
                 </p>
-                <p className="text-2xl font-extrabold">{state.membershipActive ? "Active" : "Inactive"}</p>
+                <p className="text-2xl font-extrabold">
+                  {state.membershipActive ? "Active" : "Inactive"}
+                </p>
               </div>
             </div>
             <p className="mt-4 text-sm text-primary-foreground/80">
-              Rewards process for 48 hours before becoming eligible.
+              {answeringLocked
+                ? `Ksh ${MEMBERSHIP_MILESTONE} milestone reached. Activate your Ksh ${MEMBERSHIP_ACTIVATION_PRICE} membership to continue answering questions.`
+                : "Each completed question adds its configured reward to your accumulated earnings."}
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
@@ -95,7 +106,7 @@ function MemberHome() {
               <Action variant="accent" block>
                 {state.membershipActive
                   ? "Membership active"
-                  : `Activate membership — Ksh ${MEMBERSHIP_ACTIVATION_PRICE}`}
+                  : `Activate Membership — Ksh ${MEMBERSHIP_ACTIVATION_PRICE}`}
               </Action>
             </Link>
           </div>
@@ -104,11 +115,7 @@ function MemberHome() {
 
       <section aria-label="Reward balances" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <BalancePanel label="Confirmed earnings" value={state.confirmedEarnings} />
-        <BalancePanel
-          label="Processing"
-          value={balances.processing}
-          note="Eligible within 48 hours"
-        />
+        <BalancePanel label="Processing" value={balances.processing} note="Pending eligibility" />
         <BalancePanel label="Eligible balance" value={balances.eligible} />
         <BalancePanel
           label="Withdrawable"
@@ -136,7 +143,9 @@ function MemberHome() {
               Available topics
             </h2>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Browse research freely, then answer any topic that interests you.
+              {answeringLocked
+                ? "Your questions remain visible, but answering is temporarily locked until membership is activated."
+                : "Browse research freely, then answer any topic that interests you."}
             </p>
           </div>
         </div>
@@ -182,9 +191,9 @@ function MemberHome() {
               <SurveyCard
                 key={survey.id}
                 survey={survey}
-                locked={false}
+                locked={answeringLocked}
                 completed={completed}
-                ctaLabel="Answer questions"
+                ctaLabel={answeringLocked ? "Activate membership" : "Answer questions"}
                 onAction={() => {
                   startSurveyAttempt(survey);
                   setActive(survey);

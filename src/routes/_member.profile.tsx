@@ -81,7 +81,9 @@ function Profile() {
                 {state.user?.phone || "Phone not set"}
               </p>
               <div className="mt-2">
-                <Pill tone="inverted">Membership: {state.membershipActive ? "Active" : "Inactive"}</Pill>
+                <Pill tone="inverted">
+                  Membership: {state.membershipActive ? "Active" : "Inactive"}
+                </Pill>
               </div>
             </div>
           </div>

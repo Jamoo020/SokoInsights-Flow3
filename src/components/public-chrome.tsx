@@ -121,8 +121,8 @@ export function SiteFooter() {
           </p>
           <p>M-PESA is a trademark of Safaricom PLC.</p>
           <p>
-            Every completed opinion response confirms Ksh 20. Rewards are processed for 48 hours
-            before becoming eligible.
+            Every completed opinion response confirms its configured reward. Members continue
+            earning until the Ksh 2,500 withdrawal threshold is reached.
           </p>
           <p className="pt-2 font-medium text-ink">
             © {new Date().getFullYear()} SokoInsights. All rights reserved.

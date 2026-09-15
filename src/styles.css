@@ -50,8 +50,7 @@
   --color-ring-offset-background: var(--background);
   --color-surface: var(--surface);
   --color-ink: var(--ink);
-  --font-sans:
-    "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --shadow-soft: 0 1px 2px oklch(0.3 0.04 150 / 0.04), 0 8px 24px -12px oklch(0.3 0.04 150 / 0.14);
   --shadow-lift: 0 2px 4px oklch(0.3 0.04 150 / 0.05), 0 18px 40px -18px oklch(0.3 0.04 150 / 0.22);
@@ -83,7 +82,6 @@
   --input: oklch(0.9 0.014 85);
   --ring: oklch(0.36 0.072 156);
 }
-
 
 @layer base {
   * {

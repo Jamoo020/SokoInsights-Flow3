@@ -1,12 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  BadgeCheck,
-  CreditCard,
-  ShieldCheck,
-  Smartphone,
-  Wallet,
-} from "lucide-react";
+import { ArrowRight, BadgeCheck, CreditCard, ShieldCheck, Smartphone, Wallet } from "lucide-react";
 import heroImg from "@/assets/hero-kenya.jpg";
 import { PublicHeader, SiteFooter } from "@/components/public-chrome";
 import { Action, Panel, Pill, SectionHeading } from "@/components/ui-kit";
@@ -19,13 +12,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "A Kenyan consumer research community where every completed opinion response confirms Ksh 20, processed for 48 hours before eligibility.",
+          "A Kenyan consumer research community where each completed opinion response earns Ksh 50–100, with membership required after Ksh 700 in accumulated earnings.",
       },
       { property: "og:title", content: "SokoInsights — Your voice. Better market insights." },
       {
         property: "og:description",
         content:
-          "Complete short surveys for Ksh 20 confirmed per question. Rewards become eligible within 48 hours.",
+          "Complete short surveys for Ksh 50–100 per question and unlock answering again with Ksh 250 membership after Ksh 700.",
       },
     ],
   }),
@@ -46,7 +39,7 @@ const steps = [
   {
     n: "03",
     title: "Answer and get confirmation",
-    body: "Share your opinion freely. Completed responses are confirmed immediately and then processed for 48 hours.",
+    body: "Share your opinion freely. Completed responses confirm the displayed reward immediately and continue accumulating toward the Ksh 700 milestone.",
   },
 ];
 
@@ -62,10 +55,10 @@ const trust = [
     title: "Clear reward process",
     body: "Completed opinion questions receive the configured reward immediately, then move through processing.",
     points: [
-      "Ksh 20 per question",
+      "Ksh 50–100 per question",
       "Confirmed immediately",
-      "Processed for 48 hours",
-      "Membership required to withdraw",
+      "Membership required after Ksh 700",
+      "Withdrawal threshold is Ksh 2,500",
     ],
   },
   {
@@ -145,17 +138,19 @@ function Landing() {
                 </Link>
               </div>
               <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-ink">
-                {["Free topics", "Opinion-led research", "Membership unlocks withdrawals"].map((t) => (
-                  <li key={t} className="flex items-center gap-2">
-                    <BadgeCheck className="size-4 text-primary" aria-hidden="true" />
-                    {t}
-                  </li>
-                ))}
+                {["Free topics", "Opinion-led research", "Membership unlocks withdrawals"].map(
+                  (t) => (
+                    <li key={t} className="flex items-center gap-2">
+                      <BadgeCheck className="size-4 text-primary" aria-hidden="true" />
+                      {t}
+                    </li>
+                  ),
+                )}
               </ul>
               <p className="mt-6 max-w-xl rounded-xl border border-border bg-card/70 p-4 text-xs leading-relaxed text-muted-foreground">
                 SokoInsights is not an investment, employment opportunity, or “get paid to click”
-                scheme. Each completed opinion question confirms Ksh 20, with membership activation
-                required before withdrawal.
+                scheme. Each completed opinion question confirms its configured reward, with
+                membership activation required after Ksh 700 in accumulated earnings.
               </p>
             </div>
             <div className="relative">
@@ -280,10 +275,11 @@ function Landing() {
               <Smartphone className="size-3.5" aria-hidden="true" /> Billed via M-PESA
             </Pill>
             <h2 className="mx-auto mt-5 max-w-2xl text-3xl font-extrabold tracking-tight text-primary-foreground sm:text-4xl">
-              Activate membership when you are ready to withdraw.
+              Activate membership when you are ready to continue answering after Ksh 700.
             </h2>
             <p className="mt-4 text-lg font-semibold text-primary-foreground/85">
-              Membership activation costs Ksh 200 and does not affect topic access.
+              Membership activation costs Ksh 250 and unlocks continued answering after the Ksh 700
+              milestone.
             </p>
             <div className="mt-8 flex justify-center">
               <Link to="/create-account">

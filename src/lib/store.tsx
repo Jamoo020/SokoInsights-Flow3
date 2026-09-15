@@ -7,7 +7,16 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { QUESTION_REWARD, REWARD_PROCESSING_HOURS, MEMBERSHIP_ACTIVATION_PRICE, type Survey } from "./data";
+import {
+  MEMBERSHIP_ACTIVATION_PRICE,
+  PROCESSING_FEE,
+  QUESTION_REWARD,
+  REWARD_PROCESSING_HOURS,
+  MIN_WITHDRAWAL,
+  isAnsweringLocked,
+  type MembershipStatus,
+  type Survey,
+} from "./data";
 import { createSurveyPresentation, type SurveyPresentation } from "./survey-randomization";
 
 export type MockUser = {
@@ -34,6 +43,14 @@ export type RewardRecord = {
   eligibleAt: string;
 };
 
+export type WithdrawalRequest = {
+  requestedAmount: number;
+  processingFee: number;
+  withdrawalAmount: number;
+  status: "requested" | "processing";
+  createdAt: string;
+};
+
 export type SurveyAttempt = SurveyPresentation & {
   attemptId: string;
   surveyId: string;
@@ -45,6 +62,7 @@ export type SurveyAttempt = SurveyPresentation & {
 export type AppState = {
   user: MockUser | null;
   membershipActive: boolean;
+  membershipStatus: MembershipStatus;
   balance: number;
   lifetimeEarned: number;
   withdrawn: number;
@@ -53,6 +71,7 @@ export type AppState = {
   confirmedEarnings: number;
   rewardRecords: RewardRecord[];
   surveyAttempts: Record<string, SurveyAttempt>;
+  withdrawalRequest: WithdrawalRequest | null;
 };
 
 const STORAGE_KEY = "pollyakenya.state.v1";
@@ -60,6 +79,7 @@ const STORAGE_KEY = "pollyakenya.state.v1";
 const initialState: AppState = {
   user: null,
   membershipActive: false,
+  membershipStatus: "inactive",
   balance: 0,
   lifetimeEarned: 0,
   withdrawn: 0,
@@ -68,6 +88,7 @@ const initialState: AppState = {
   confirmedEarnings: 0,
   rewardRecords: [],
   surveyAttempts: {},
+  withdrawalRequest: null,
 };
 
 type Ctx = {
@@ -84,35 +105,40 @@ type Ctx = {
     selectedOptionIds: string[],
   ) => void;
   completeSurvey: (survey: Survey) => void;
-  withdraw: (amount: number) => void;
+  requestWithdrawal: (amount: number) => void;
+  payWithdrawalProcessingFee: () => void;
   startSurveyAttempt: (survey: Survey) => SurveyAttempt;
 };
 
 export function getRewardBalances(state: AppState, now = Date.now()) {
+  const accumulatedEarnings = Math.max(0, state.confirmedEarnings || state.balance || 0);
   const processing = state.rewardRecords
     .filter((reward) => new Date(reward.eligibleAt).getTime() > now)
     .reduce((total, reward) => total + reward.amount, 0);
-  const eligible = Math.max(
-    0,
-    state.rewardRecords
-      .filter((reward) => new Date(reward.eligibleAt).getTime() <= now)
-      .reduce((total, reward) => total + reward.amount, 0) - state.withdrawn,
-  );
-  const withdrawable = state.membershipActive ? eligible : 0;
-  return { processing, eligible, withdrawable };
+  const eligible = Math.max(0, accumulatedEarnings - state.withdrawn);
+  const withdrawable = state.membershipActive && !state.withdrawalRequest ? eligible : 0;
+  return { processing, eligible, withdrawable, accumulatedEarnings };
 }
 
 function hydrateState(raw: Partial<AppState> & { plan?: string }): AppState {
   const rewardRecords = raw.rewardRecords ?? [];
   const stateWithoutLegacyPlan = { ...raw };
   delete stateWithoutLegacyPlan.plan;
+  const membershipActive = raw.membershipActive ?? raw.plan !== "Free";
+  const membershipStatus = raw.membershipStatus ?? (membershipActive ? "active" : "inactive");
+  const confirmedEarnings = raw.confirmedEarnings ?? raw.balance ?? raw.lifetimeEarned ?? 0;
+  const normalized = {
+    ...initialState,
+    ...stateWithoutLegacyPlan,
+    membershipActive,
+    membershipStatus,
+    confirmedEarnings,
+    balance: raw.balance ?? confirmedEarnings,
+    rewardRecords,
+  };
+
   if (rewardRecords.length > 0 || !raw.balance) {
-    return {
-      ...initialState,
-      ...stateWithoutLegacyPlan,
-      membershipActive: raw.membershipActive ?? raw.plan !== "Free",
-      rewardRecords,
-    };
+    return normalized;
   }
 
   const legacyReward: RewardRecord = {
@@ -124,10 +150,7 @@ function hydrateState(raw: Partial<AppState> & { plan?: string }): AppState {
     eligibleAt: new Date(0).toISOString(),
   };
   return {
-    ...initialState,
-    ...stateWithoutLegacyPlan,
-    membershipActive: raw.membershipActive ?? raw.plan !== "Free",
-    confirmedEarnings: raw.confirmedEarnings ?? raw.lifetimeEarned ?? raw.balance,
+    ...normalized,
     rewardRecords: [legacyReward],
   };
 }
@@ -177,20 +200,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       signIn: (user) => update((prev) => ({ ...prev, user: { ...prev.user, ...user } })),
       signOut: () => update((prev) => ({ ...prev, user: null })),
       activateMembership: () =>
-        update((prev) => ({
-          ...prev,
-          membershipActive: true,
-          transactions: [
-            {
-              id: `membership-${Date.now()}`,
-              label: "Membership activation",
-              amount: -MEMBERSHIP_ACTIVATION_PRICE,
-              type: "membership",
-              date: new Date().toISOString(),
-            },
-            ...prev.transactions,
-          ],
-        })),
+        update((prev) => {
+          if (prev.membershipActive) return prev;
+          return {
+            ...prev,
+            membershipActive: true,
+            membershipStatus: "active",
+            transactions: [
+              {
+                id: `membership-${Date.now()}`,
+                label: "Membership Activation — Ksh 250",
+                amount: -MEMBERSHIP_ACTIVATION_PRICE,
+                type: "membership",
+                date: new Date().toISOString(),
+              },
+              ...prev.transactions,
+            ],
+          };
+        }),
       startSurveyAttempt: (survey) => {
         const existing = state.surveyAttempts[survey.id];
         if (existing) return existing;
@@ -213,28 +240,34 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         update((prev) => {
           const rewardId = `rw-${attemptId}-${questionId}`;
           if (prev.rewardRecords.some((reward) => reward.id === rewardId)) return prev;
+          if (isAnsweringLocked(prev.confirmedEarnings, prev.membershipStatus)) return prev;
+
           const now = new Date();
           const reward: RewardRecord = {
             id: rewardId,
             attemptId,
             surveyId: survey.id,
             questionId,
-            amount: survey.questionSet.find((question) => question.id === questionId)?.reward ?? QUESTION_REWARD,
+            amount:
+              survey.questionSet.find((question) => question.id === questionId)?.reward ??
+              QUESTION_REWARD,
             confirmedAt: now.toISOString(),
             eligibleAt: new Date(
               now.getTime() + REWARD_PROCESSING_HOURS * 60 * 60 * 1000,
             ).toISOString(),
           };
+          const nextConfirmedEarnings = prev.confirmedEarnings + reward.amount;
+          const nextBalance = Math.max(0, nextConfirmedEarnings - prev.withdrawn);
           return {
             ...prev,
-            balance: prev.balance + reward.amount,
-            confirmedEarnings: prev.confirmedEarnings + reward.amount,
+            balance: nextBalance,
+            confirmedEarnings: nextConfirmedEarnings,
             lifetimeEarned: prev.lifetimeEarned + reward.amount,
             rewardRecords: [...prev.rewardRecords, reward],
             surveyAttempts: {
               ...prev.surveyAttempts,
               [survey.id]: {
-                ...prev.surveyAttempts[survey.id]!,
+                ...(prev.surveyAttempts[survey.id] ?? {}),
                 currentQuestionIndex:
                   (prev.surveyAttempts[survey.id]?.currentQuestionIndex ?? 0) + 1,
                 answeredQuestionIds: [
@@ -266,21 +299,61 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             ? prev.completedSurveys
             : [...prev.completedSurveys, survey.id],
         })),
-      withdraw: (amount) =>
+      requestWithdrawal: (amount) =>
         update((prev) => {
-          const { withdrawable } = getRewardBalances(prev);
-          if (!prev.membershipActive || amount <= 0 || amount > withdrawable) return prev;
+          const membershipStatus = prev.membershipActive ? "active" : "inactive";
+          const belowMinimum = amount < MIN_WITHDRAWAL;
+          const exceedsBalance = amount > Math.max(0, prev.confirmedEarnings - prev.withdrawn);
+          if (
+            !prev.membershipActive ||
+            membershipStatus !== "active" ||
+            belowMinimum ||
+            exceedsBalance
+          ) {
+            return prev;
+          }
+          if (prev.withdrawalRequest && prev.withdrawalRequest.status === "processing") return prev;
+          const now = new Date().toISOString();
           return {
             ...prev,
-            balance: Math.max(0, prev.balance - amount),
-            withdrawn: prev.withdrawn + amount,
+            withdrawalRequest: {
+              requestedAmount: amount,
+              processingFee: PROCESSING_FEE,
+              withdrawalAmount: amount,
+              status: "requested",
+              createdAt: now,
+            },
             transactions: [
               {
-                id: `wd-${Date.now()}`,
-                label: "Withdrawal to M-PESA (simulated)",
-                amount: -amount,
+                id: `wd-request-${Date.now()}`,
+                label: `Withdrawal request — ${amount === MIN_WITHDRAWAL ? "Ksh 2,500" : `Ksh ${amount}`}`,
+                amount: 0,
                 type: "withdrawal",
-                date: new Date().toISOString(),
+                date: now,
+              },
+              ...prev.transactions,
+            ],
+          };
+        }),
+      payWithdrawalProcessingFee: () =>
+        update((prev) => {
+          if (!prev.withdrawalRequest || prev.withdrawalRequest.status === "processing")
+            return prev;
+          const now = new Date().toISOString();
+          return {
+            ...prev,
+            withdrawalRequest: {
+              ...prev.withdrawalRequest,
+              status: "processing",
+              processingFee: PROCESSING_FEE,
+            },
+            transactions: [
+              {
+                id: `wd-fee-${Date.now()}`,
+                label: "Withdrawal processing fee — Ksh 50",
+                amount: -PROCESSING_FEE,
+                type: "withdrawal",
+                date: now,
               },
               ...prev.transactions,
             ],

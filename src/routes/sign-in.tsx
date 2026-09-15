@@ -16,7 +16,10 @@ export const Route = createFileRoute("/sign-in")({
           "Sign in to your SokoInsights member account to access free research topics, your wallet and membership.",
       },
       { property: "og:title", content: "Sign in | SokoInsights" },
-      { property: "og:description", content: "Access free research topics, your wallet and membership." },
+      {
+        property: "og:description",
+        content: "Access free research topics, your wallet and membership.",
+      },
     ],
   }),
   component: SignIn,

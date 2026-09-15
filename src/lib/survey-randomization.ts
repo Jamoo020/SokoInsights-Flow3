@@ -5,10 +5,14 @@ export type SurveyPresentation = {
   optionOrderByQuestion: Record<string, string[]>;
 };
 
-const SPECIAL_OPTION_PATTERN = /^(other|none of the above|prefer not to say|don't know|not applicable)$/i;
+const SPECIAL_OPTION_PATTERN =
+  /^(other|none of the above|prefer not to say|don't know|not applicable)$/i;
 
 function hashSeed(value: string) {
-  return [...value].reduce((hash, character) => (hash * 31 + character.charCodeAt(0)) >>> 0, 2166136261);
+  return [...value].reduce(
+    (hash, character) => (hash * 31 + character.charCodeAt(0)) >>> 0,
+    2166136261,
+  );
 }
 
 function nextRandom(seed: number) {
@@ -48,7 +52,9 @@ function randomizeQuestionOrder(questions: Question[], seed: number) {
   let sectionQuestions: Question[] = [];
 
   const flushSection = () => {
-    const movable = sectionQuestions.filter((question) => question.randomizable && !question.dependsOn);
+    const movable = sectionQuestions.filter(
+      (question) => question.randomizable && !question.dependsOn,
+    );
     const randomized = shuffle(movable, seed + result.length);
     let movableIndex = 0;
     result.push(
@@ -88,10 +94,7 @@ export function createSurveyPresentation(survey: Survey, attemptId: string): Sur
   const seed = hashSeed(`${attemptId}:${survey.id}`);
   const questionOrder = randomizeQuestionOrder(questions, seed);
   const optionOrderByQuestion = Object.fromEntries(
-    questions.map((question, index) => [
-      question.id,
-      randomizeOptions(question, seed + index + 1),
-    ]),
+    questions.map((question, index) => [question.id, randomizeOptions(question, seed + index + 1)]),
   );
 
   return { questionOrder, optionOrderByQuestion };
