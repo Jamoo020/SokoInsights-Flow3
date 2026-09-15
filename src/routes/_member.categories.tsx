@@ -4,7 +4,9 @@ import { Pill } from "@/components/ui-kit";
 import {
   CATEGORY_IMAGES,
   CATEGORY_LABELS,
+  ksh,
   SURVEYS,
+  surveyRewardRange,
   type CategoryId,
 } from "@/lib/data";
 
@@ -77,6 +79,7 @@ function Categories() {
               </div>
               <ul className="divide-y divide-border">
                 {surveys.map((s) => {
+                  const rewardRange = surveyRewardRange(s);
                   return (
                     <li key={s.id}>
                       <button
@@ -87,7 +90,7 @@ function Categories() {
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-bold text-ink">{s.title}</p>
                           <p className="mt-0.5 text-xs text-muted-foreground">
-                            {s.questions} questions · about {s.minutes} minutes
+                            {s.questions} questions · about {s.minutes} minutes · {ksh(rewardRange.min)}-{ksh(rewardRange.max)} per question
                           </p>
                         </div>
                         <span className="shrink-0 text-sm font-bold text-primary">

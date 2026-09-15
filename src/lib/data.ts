@@ -350,6 +350,14 @@ export function surveyImage(survey: Survey) {
   return CATEGORY_IMAGES[survey.category];
 }
 
+export function surveyRewardRange(survey: Survey) {
+  const rewards = survey.questionSet.map((question) => question.reward);
+  return {
+    min: Math.min(...rewards),
+    max: Math.max(...rewards),
+  };
+}
+
 export const MIN_WITHDRAWAL = 2500;
 
 export function ksh(value: number) {

@@ -1,6 +1,6 @@
 import { ArrowRight, CheckCircle2, Clock } from "lucide-react";
 import { Action, Pill } from "@/components/ui-kit";
-import { CATEGORY_LABELS, surveyImage, type Survey } from "@/lib/data";
+import { CATEGORY_LABELS, ksh, surveyImage, surveyRewardRange, type Survey } from "@/lib/data";
 
 export function SurveyCard({
   survey,
@@ -15,6 +15,8 @@ export function SurveyCard({
   ctaLabel: string;
   onAction: () => void;
 }) {
+  const rewardRange = surveyRewardRange(survey);
+
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition-shadow hover:shadow-lift">
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-secondary">
@@ -47,7 +49,12 @@ export function SurveyCard({
           {survey.questions} questions · about {survey.minutes} minutes
         </p>
         <p className="mt-3 text-sm font-semibold text-ink">
-          Short opinion study · share your perspective
+          <span className="text-accent-foreground">
+            {rewardRange.min === rewardRange.max
+              ? `${ksh(rewardRange.min)} per question`
+              : `${ksh(rewardRange.min)}-${ksh(rewardRange.max)} per question`}
+          </span>{" "}
+          · confirmed after each answer
         </p>
         <div className="mt-5 pt-1">
           <Action
