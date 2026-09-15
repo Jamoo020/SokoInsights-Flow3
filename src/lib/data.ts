@@ -73,10 +73,21 @@ export const CATEGORY_LABELS: Record<CategoryId, string> = {
   premium: "Premium",
 };
 
+export type QuestionOption = {
+  id: string;
+  label: string;
+  randomizable?: boolean;
+};
+
 export type Question = {
   id: string;
   prompt: string;
-  options: string[];
+  questionType: "multiple_choice" | "likert" | "frequency" | "multi_select";
+  optionOrder: "fixed" | "random";
+  randomizable: boolean;
+  section?: string;
+  dependsOn?: string;
+  options: QuestionOption[];
 };
 
 export type Topic = {
@@ -98,57 +109,85 @@ export type Topic = {
 export type Survey = Topic;
 
 function qs(topic: string, questionCount: number): Question[] {
-  const base: Question[] = [
+  const base: Array<Omit<Question, "options"> & { options: string[] }> = [
     {
       id: "q1",
       prompt: `How often do you engage with ${topic}?`,
+      questionType: "frequency",
+      optionOrder: "fixed",
+      randomizable: true,
       options: ["Daily", "A few times a week", "A few times a month", "Rarely or never"],
     },
     {
       id: "q2",
       prompt: `Which part of ${topic} matters most to you?`,
+      questionType: "multiple_choice",
+      optionOrder: "random",
+      randomizable: true,
       options: ["Cost", "Reliability", "Customer care", "Convenience"],
     },
     {
       id: "q3",
       prompt: `How would you describe your most recent ${topic} experience?`,
+      questionType: "likert",
+      optionOrder: "fixed",
+      randomizable: true,
       options: ["Excellent", "Good", "Average", "Poor"],
     },
     {
       id: "q4",
       prompt: `How likely are you to recommend this kind of ${topic} experience?`,
+      questionType: "likert",
+      optionOrder: "fixed",
+      randomizable: true,
       options: ["Definitely", "Probably", "Not sure", "No"],
     },
     {
       id: "q5",
       prompt: `Where do you usually learn about ${topic}?`,
+      questionType: "multiple_choice",
+      optionOrder: "random",
+      randomizable: true,
       options: ["Social media", "Radio or TV", "Friends and family", "SMS or app notifications"],
     },
     {
       id: "q6",
       prompt: `What would make you engage with ${topic} more often?`,
+      questionType: "multiple_choice",
+      optionOrder: "random",
+      randomizable: true,
       options: ["Lower charges", "Better app experience", "Faster support", "More rewards"],
     },
     {
       id: "q7",
       prompt: `How do you compare your current ${topic} options with alternatives?`,
+      questionType: "likert",
+      optionOrder: "fixed",
+      randomizable: true,
       options: ["Much better", "Slightly better", "About the same", "Worse"],
     },
     {
       id: "q8",
       prompt: `Which channel do you prefer for decisions about ${topic}?`,
+      questionType: "multiple_choice",
+      optionOrder: "random",
+      randomizable: true,
       options: ["In person", "Phone call", "App or chat", "Social media"],
     },
   ];
-  return base.slice(0, questionCount);
+  return base.slice(0, questionCount).map((question) => ({
+    ...question,
+    options: question.options.map((label, index) => ({
+      id: `${question.id}-option-${index + 1}`,
+      label,
+    })),
+  }));
 }
 
 function topicVariant(title: string) {
   const hash = [...title].reduce((value, character) => (value * 31 + character.charCodeAt(0)) >>> 0, 7);
-  const rewards = [15, 20, 25, 30];
   return {
     questionCount: 5 + (hash % 4),
-    rewardPerQuestion: rewards[Math.floor(hash / 4) % rewards.length]!,
   };
 }
 
@@ -176,8 +215,8 @@ export const SURVEYS: Survey[] = topicSeeds.map(([title, category, minutes], ind
     questions: questionSet.length,
     questionCount: questionSet.length,
     minutes,
-    maxReward: questionSet.length * variant.rewardPerQuestion,
-    rewardPerQuestion: variant.rewardPerQuestion,
+    maxReward: questionSet.length * QUESTION_REWARD,
+    rewardPerQuestion: QUESTION_REWARD,
     questionSet,
   };
 });

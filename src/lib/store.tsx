@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { QUESTION_REWARD, REWARD_PROCESSING_HOURS, MEMBERSHIP_ACTIVATION_PRICE, type Survey } from "./data";
+import { createSurveyPresentation, type SurveyPresentation } from "./survey-randomization";
 
 export type MockUser = {
   name: string;
@@ -25,11 +26,20 @@ export type Transaction = {
 
 export type RewardRecord = {
   id: string;
+  attemptId?: string;
   surveyId: string;
   questionId: string;
   amount: number;
   confirmedAt: string;
   eligibleAt: string;
+};
+
+export type SurveyAttempt = SurveyPresentation & {
+  attemptId: string;
+  surveyId: string;
+  currentQuestionIndex: number;
+  answeredQuestionIds: string[];
+  submittedAnswers: Record<string, string[]>;
 };
 
 export type AppState = {
@@ -42,6 +52,7 @@ export type AppState = {
   transactions: Transaction[];
   confirmedEarnings: number;
   rewardRecords: RewardRecord[];
+  surveyAttempts: Record<string, SurveyAttempt>;
 };
 
 const STORAGE_KEY = "pollyakenya.state.v1";
@@ -56,6 +67,7 @@ const initialState: AppState = {
   transactions: [],
   confirmedEarnings: 0,
   rewardRecords: [],
+  surveyAttempts: {},
 };
 
 type Ctx = {
@@ -65,9 +77,15 @@ type Ctx = {
   signIn: (user: MockUser) => void;
   signOut: () => void;
   activateMembership: () => void;
-  confirmQuestion: (survey: Survey, questionId: string) => void;
+  confirmQuestion: (
+    survey: Survey,
+    attemptId: string,
+    questionId: string,
+    selectedOptionIds: string[],
+  ) => void;
   completeSurvey: (survey: Survey) => void;
   withdraw: (amount: number) => void;
+  startSurveyAttempt: (survey: Survey) => SurveyAttempt;
 };
 
 export function getRewardBalances(state: AppState, now = Date.now()) {
@@ -173,13 +191,32 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             ...prev.transactions,
           ],
         })),
-      confirmQuestion: (survey, questionId) =>
+      startSurveyAttempt: (survey) => {
+        const existing = state.surveyAttempts[survey.id];
+        if (existing) return existing;
+        const attemptId = `attempt-${survey.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        const attempt: SurveyAttempt = {
+          ...createSurveyPresentation(survey, attemptId),
+          attemptId,
+          surveyId: survey.id,
+          currentQuestionIndex: 0,
+          answeredQuestionIds: [],
+          submittedAnswers: {},
+        };
+        update((prev) => ({
+          ...prev,
+          surveyAttempts: { ...prev.surveyAttempts, [survey.id]: attempt },
+        }));
+        return attempt;
+      },
+      confirmQuestion: (survey, attemptId, questionId, selectedOptionIds) =>
         update((prev) => {
-          const rewardId = `rw-${survey.id}-${questionId}`;
+          const rewardId = `rw-${attemptId}-${questionId}`;
           if (prev.rewardRecords.some((reward) => reward.id === rewardId)) return prev;
           const now = new Date();
           const reward: RewardRecord = {
             id: rewardId,
+            attemptId,
             surveyId: survey.id,
             questionId,
             amount: survey.rewardPerQuestion ?? QUESTION_REWARD,
@@ -194,6 +231,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             confirmedEarnings: prev.confirmedEarnings + reward.amount,
             lifetimeEarned: prev.lifetimeEarned + reward.amount,
             rewardRecords: [...prev.rewardRecords, reward],
+            surveyAttempts: {
+              ...prev.surveyAttempts,
+              [survey.id]: {
+                ...prev.surveyAttempts[survey.id]!,
+                currentQuestionIndex:
+                  (prev.surveyAttempts[survey.id]?.currentQuestionIndex ?? 0) + 1,
+                answeredQuestionIds: [
+                  ...(prev.surveyAttempts[survey.id]?.answeredQuestionIds ?? []),
+                  questionId,
+                ],
+                submittedAnswers: {
+                  ...(prev.surveyAttempts[survey.id]?.submittedAnswers ?? {}),
+                  [questionId]: selectedOptionIds,
+                },
+              },
+            },
             transactions: [
               {
                 id: rewardId,

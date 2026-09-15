@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_member/app")({
 const filters = ["All", ...Object.values(CATEGORY_LABELS)] as const;
 
 function MemberHome() {
-  const { state } = useStore();
+  const { state, startSurveyAttempt } = useStore();
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const [search, setSearch] = useState("");
   const [active, setActive] = useState<Survey | null>(null);
@@ -185,7 +185,10 @@ function MemberHome() {
                 locked={false}
                 completed={completed}
                 ctaLabel="Answer questions"
-                onAction={() => setActive(survey)}
+                onAction={() => {
+                  startSurveyAttempt(survey);
+                  setActive(survey);
+                }}
               />
             );
           })}

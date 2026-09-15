@@ -1,5 +1,5 @@
 import { CheckCircle2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -14,31 +14,56 @@ import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClose: () => void }) {
-  const { completeSurvey, confirmQuestion } = useStore();
+  const { state, completeSurvey, confirmQuestion } = useStore();
   const [step, setStep] = useState(0);
-  const [answer, setAnswer] = useState<string | null>(null);
+  const [answer, setAnswer] = useState<string[]>([]);
   const [confirmation, setConfirmation] = useState<{
     questionNumber: number;
     total: number;
   } | null>(null);
   const [taskComplete, setTaskComplete] = useState(false);
 
-  if (!survey) return null;
+  const attempt = survey ? state.surveyAttempts[survey.id] : null;
+  const orderedQuestions = attempt && survey
+    ? attempt.questionOrder
+        .map((questionId) => survey.questionSet.find((candidate) => candidate.id === questionId))
+        .filter((question): question is NonNullable<typeof question> => Boolean(question))
+    : [];
+  const total = orderedQuestions.length;
+  const question = orderedQuestions[Math.min(step, Math.max(total - 1, 0))];
+  const orderedOptions = question && attempt
+    ? attempt.optionOrderByQuestion[question.id]
+        .map((optionId) => question.options.find((option) => option.id === optionId))
+        .filter((option): option is NonNullable<typeof option> => Boolean(option))
+    : [];
 
-  const total = survey.questionSet.length;
-  const question = survey.questionSet[Math.min(step, total - 1)]!;
+  useEffect(() => {
+    if (!survey || !attempt) {
+      setStep(0);
+      setAnswer([]);
+      setConfirmation(null);
+      setTaskComplete(false);
+      return;
+    }
+    setStep(Math.min(attempt.currentQuestionIndex, Math.max(total - 1, 0)));
+    setAnswer(attempt.submittedAnswers[question?.id ?? ""] ?? []);
+    setConfirmation(null);
+    setTaskComplete(attempt.currentQuestionIndex >= total);
+  }, [attempt?.attemptId, survey?.id, total]);
+
+  if (!survey || !attempt || !question || total === 0) return null;
 
   const close = () => {
     setStep(0);
-    setAnswer(null);
+    setAnswer([]);
     setConfirmation(null);
     setTaskComplete(false);
     onClose();
   };
 
   const next = () => {
-    if (!answer) return;
-    confirmQuestion(survey, question.id);
+    if (answer.length === 0) return;
+    confirmQuestion(survey, attempt.attemptId, question.id, answer);
     setConfirmation({ questionNumber: step + 1, total });
     toast.success("Reward confirmed", {
       description: `+${ksh(survey.rewardPerQuestion)} added to your earnings.`,
@@ -49,7 +74,7 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
     if (!confirmation) return;
     if (confirmation.questionNumber < total) {
       setStep(step + 1);
-      setAnswer(null);
+      setAnswer([]);
       setConfirmation(null);
       return;
     }
@@ -132,25 +157,33 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
                 There are no right or wrong answers. Every completed opinion response confirms {ksh(survey.rewardPerQuestion)}.
               </p>
               <div className="mt-4 space-y-2">
-                {question.options.map((opt) => (
+                {orderedOptions.map((option) => (
                   <label
-                    key={opt}
+                    key={option.id}
                     className={cn(
                       "flex cursor-pointer items-center gap-3 rounded-xl border p-4 text-sm font-medium transition-colors",
-                      answer === opt
+                      answer.includes(option.id)
                         ? "border-primary bg-primary-soft text-ink"
                         : "border-border bg-card hover:bg-secondary",
                     )}
                   >
                     <input
-                      type="radio"
+                      type={question.questionType === "multi_select" ? "checkbox" : "radio"}
                       name={`q-${question.id}-${step}`}
-                      value={opt}
-                      checked={answer === opt}
-                      onChange={() => setAnswer(opt)}
+                      value={option.id}
+                      checked={answer.includes(option.id)}
+                      onChange={() => {
+                        if (question.questionType === "multi_select") {
+                          setAnswer((current) => current.includes(option.id)
+                            ? current.filter((id) => id !== option.id)
+                            : [...current, option.id]);
+                        } else {
+                          setAnswer([option.id]);
+                        }
+                      }}
                       className="size-4 accent-[oklch(0.36_0.072_156)]"
                     />
-                    {opt}
+                    {option.label}
                   </label>
                 ))}
               </div>
