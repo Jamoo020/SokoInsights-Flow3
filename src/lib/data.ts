@@ -36,47 +36,47 @@ export type CategoryId =
   | "premium";
 
 const imageUrl = (id: string) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=80`;
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=900&q=72`;
 
 export const CATEGORY_IMAGES: Record<CategoryId, string> = {
   telecom: imageUrl("photo-1516321318423-f06f85e504b3"),
-  banking: imageUrl("photo-1556742049-0cfed4f6a45d"),
-  finance: imageUrl("photo-1554224155-6726b3ff858f"),
-  shopping: imageUrl("photo-1601598851547-4302969d7bfd"),
-  food: imageUrl("photo-1504674900247-0877df9cc836"),
-  technology: imageUrl("photo-1518770660439-4636190af475"),
-  transport: imageUrl("photo-1544620347-c4fd4a3d5957"),
-  automotive: imageUrl("photo-1492144534655-ae79c964c9d7"),
-  healthcare: imageUrl("photo-1505751172876-fa1923c5c528"),
-  education: imageUrl("photo-1523240795612-9a054b0db644"),
-  entertainment: imageUrl("photo-1489599849927-2ee91cede3ba"),
+  banking: imageUrl("photo-1542744173-8e7e53415bb0"),
+  finance: imageUrl("photo-1450101499163-c8848c66ca85"),
+  shopping: imageUrl("photo-1542838132-92c53300491e"),
+  food: imageUrl("photo-1495474472287-4d71bcdd2085"),
+  technology: imageUrl("photo-1519389950473-47ba0277781c"),
+  transport: imageUrl("photo-1500534623283-312aade485b7"),
+  automotive: imageUrl("photo-1497366754035-f200968a6e72"),
+  healthcare: imageUrl("photo-1511818966892-d7d671e672a2"),
+  education: imageUrl("photo-1517245386807-bb43f82c33c4"),
+  entertainment: imageUrl("photo-1492684223066-81342ee5ff30"),
   travel: imageUrl("photo-1500530855697-b586d89ba3ee"),
-  ecommerce: imageUrl("photo-1556740749-887f6717d7e4"),
-  apps: imageUrl("photo-1512941937669-90a1b58e7e9c"),
-  "consumer-products": imageUrl("photo-1556228578-0d85b1a4d571"),
-  agriculture: imageUrl("photo-1500382017468-9049fed747ef"),
-  housing: imageUrl("photo-1564013799919-ab600027ffc6"),
+  ecommerce: imageUrl("photo-1512909006721-3d6018887383"),
+  apps: imageUrl("photo-1499750310107-5fef28a66643"),
+  "consumer-products": imageUrl("photo-1512621776951-a57141f2eefd"),
+  agriculture: imageUrl("photo-1464226184884-fa280b87c399"),
+  housing: imageUrl("photo-1505693416388-ac5ce068fe85"),
   insurance: imageUrl("photo-1450101499163-c8848c66ca85"),
-  energy: imageUrl("photo-1473341304170-971dccb5ac1e"),
-  beauty: imageUrl("photo-1522337360788-8b13dee7a37e"),
-  sports: imageUrl("photo-1461896836934-ffe607ba8211"),
-  media: imageUrl("photo-1504711434969-e33886168f5c"),
+  energy: imageUrl("photo-1509391366360-2e959784a276"),
+  beauty: imageUrl("photo-1498837167922-ddd27525d352"),
+  sports: imageUrl("photo-1524250502761-1ac6f2e30d43"),
+  media: imageUrl("photo-1481627834876-b7833e8f5570"),
   employment: imageUrl("photo-1521737711867-e3b97375f902"),
-  lifestyle: imageUrl("photo-1492684223066-81342ee5ff30"),
+  lifestyle: imageUrl("photo-1500534623283-312aade485b7"),
   "public-services": imageUrl("photo-1515169067868-5387ec356754"),
-  research: imageUrl("photo-1532619675605-1ede6c2ed2b0"),
+  research: imageUrl("photo-1497215728101-856f4ea42174"),
   premium: imageUrl("photo-1556761175-b413da4baf72"),
 };
 
 const TOPIC_IMAGES: Array<[string[], string]> = [
-  [["smartphone", "mobile app", "app usage"], imageUrl("photo-1512941937669-90a1b58e7e9c")],
+  [["smartphone", "mobile app", "app usage"], imageUrl("photo-1499750310107-5fef28a66643")],
   [
     ["ai awareness", "cloud services", "cybersecurity", "online privacy"],
-    imageUrl("photo-1518770660439-4636190af475"),
+    imageUrl("photo-1519389950473-47ba0277781c"),
   ],
   [
     ["internet", "network coverage", "5g", "data usage"],
-    imageUrl("photo-1451187580459-43490279c0fa"),
+    imageUrl("photo-1516321318423-f06f85e504b3"),
   ],
   [
     ["restaurant", "fast food", "coffee", "food delivery", "food purchasing"],
@@ -84,15 +84,15 @@ const TOPIC_IMAGES: Array<[string[], string]> = [
   ],
   [
     ["supermarket", "shopping", "purchasing", "consumer promotions"],
-    imageUrl("photo-1601598851547-4302969d7bfd"),
+    imageUrl("photo-1542838132-92c53300491e"),
   ],
-  [["delivery", "online shopping"], imageUrl("photo-1586880244406-556ebe35f282")],
+  [["delivery", "online shopping"], imageUrl("photo-1512909006721-3d6018887383")],
   [
     ["bank", "banking", "savings", "loan", "credit card", "atm"],
-    imageUrl("photo-1556742049-0cfed4f6a45d"),
+    imageUrl("photo-1542744173-8e7e53415bb0"),
   ],
-  [["farming", "agricultural", "agriculture"], imageUrl("photo-1500382017468-9049fed747ef")],
-  [["housing", "home improvement", "rental"], imageUrl("photo-1564013799919-ab600027ffc6")],
+  [["farming", "agricultural", "agriculture"], imageUrl("photo-1464226184884-fa280b87c399")],
+  [["housing", "home improvement", "rental"], imageUrl("photo-1505693416388-ac5ce068fe85")],
   [["insurance", "financial planning", "budgeting"], imageUrl("photo-1450101499163-c8848c66ca85")],
 ];
 
