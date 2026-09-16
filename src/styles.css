@@ -93,3 +93,61 @@
     color: var(--color-foreground);
   }
 }
+
+@keyframes withdrawal-activity-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -18px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes withdrawal-activity-exit {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -12px);
+  }
+}
+
+.withdrawal-activity {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  z-index: 60;
+  display: flex;
+  width: min(24rem, calc(100vw - 2rem));
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid oklch(0.9 0.014 85);
+  border-radius: 1rem;
+  background: oklch(1 0 0 / 0.98);
+  padding: 0.75rem 1rem;
+  box-shadow: 0 12px 32px -14px oklch(0.28 0.045 155 / 0.32);
+  pointer-events: none;
+}
+
+.withdrawal-activity-enter {
+  animation: withdrawal-activity-enter 0.45s ease-out both;
+}
+
+.withdrawal-activity-exit {
+  animation: withdrawal-activity-exit 0.45s ease-in both;
+}
+
+.withdrawal-activity-icon {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background: var(--primary-soft);
+  color: var(--primary);
+}

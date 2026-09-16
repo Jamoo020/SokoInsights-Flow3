@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { StoreProvider } from "../lib/store";
 import { Toaster } from "../components/ui/sonner";
+import { WithdrawalActivity } from "../components/withdrawal-activity";
 
 function NotFoundComponent() {
   return (
@@ -83,14 +84,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "SokoInsights is a Kenyan consumer research platform where members answer opinion questions for Ksh 50–100 per completed response and continue with membership after Ksh 700.",
+          "SokoInsights is a Kenyan consumer research platform where members answer opinion questions for Ksh 50–100 per completed response and continue with membership-driven access.",
       },
       { name: "author", content: "SokoInsights" },
       { property: "og:title", content: "SokoInsights — Your voice. Better market insights." },
       {
         property: "og:description",
         content:
-          "Answer opinion questions for Ksh 50–100 per completed response, unlock with Ksh 250 membership after Ksh 700, and withdraw from Ksh 2,500.",
+          "Answer opinion questions for Ksh 50–100 per completed response, unlock with Ksh 250 membership, and withdraw from Ksh 2,500.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -139,6 +140,7 @@ function RootComponent() {
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <Toaster position="bottom-right" richColors closeButton />
+        <WithdrawalActivity />
       </StoreProvider>
     </QueryClientProvider>
   );

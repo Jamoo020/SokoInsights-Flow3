@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 const benefits = [
   { icon: Layers3, label: "Browse a growing library of topics" },
-  { icon: Clock3, label: "Accumulate earnings toward the Ksh 700 milestone" },
+  { icon: Clock3, label: "Accumulate earnings as you answer" },
   { icon: WalletCards, label: "Withdraw eligible rewards to M-PESA" },
 ];
 
@@ -48,12 +48,6 @@ export function AuthLayout({ children }: { children: ReactNode }) {
                 </p>
                 <p className="mt-1 text-xs font-semibold leading-tight text-muted-foreground">
                   per completed question
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border bg-card/80 p-3 shadow-soft sm:p-4">
-                <p className="text-xl font-extrabold text-ink sm:text-2xl">Ksh 700</p>
-                <p className="mt-1 text-xs font-semibold leading-tight text-muted-foreground">
-                  milestone to continue
                 </p>
               </div>
               <div className="rounded-2xl border border-border bg-card/80 p-3 shadow-soft sm:p-4">

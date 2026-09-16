@@ -37,8 +37,8 @@ function Plans() {
           Unlock withdrawals when you are ready.
         </h1>
         <p className="mt-3 text-sm font-semibold text-primary-foreground/85">
-          Browse topics and answer questions while you build earnings. Membership is required to
-          continue answering after Ksh 700 in accumulated earnings.
+          Browse topics and answer questions while you build earnings. Membership unlocks continued
+          access and withdrawal eligibility.
         </p>
       </section>
 
@@ -52,7 +52,7 @@ function Plans() {
           {[
             "Browse every published topic for free",
             "Earn Ksh 50–100 for each completed question",
-            "Unlock answering again after the Ksh 700 milestone",
+            "Unlock continued access and answering",
             "Continue accumulating to the Ksh 2,500 withdrawal threshold",
           ].map((item) => (
             <li key={item} className="flex items-start gap-2">
@@ -62,8 +62,7 @@ function Plans() {
           ))}
         </ul>
         <p className="mt-6 rounded-xl bg-secondary p-4 text-sm text-muted-foreground">
-          Membership activation is required only when your accumulated earnings reach Ksh 700 and
-          you want to continue answering questions.
+          Membership activation unlocks continued access and supports your withdrawal eligibility.
         </p>
         <div className="mt-6">
           <Action block disabled={state.membershipActive} onClick={() => setSelected(true)}>

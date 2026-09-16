@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Action } from "@/components/ui-kit";
-import { CATEGORY_LABELS, ksh, type Survey } from "@/lib/data";
+import { CATEGORY_LABELS, isAnsweringLocked, ksh, type Survey } from "@/lib/data";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -22,8 +22,9 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
     total: number;
   } | null>(null);
   const [taskComplete, setTaskComplete] = useState(false);
+  const [membershipLockOpen, setMembershipLockOpen] = useState(false);
 
-  const answeringLocked = state.confirmedEarnings >= 700 && state.membershipStatus !== "active";
+  const answeringLocked = isAnsweringLocked(state.confirmedEarnings, state.membershipStatus);
   const attempt = survey ? state.surveyAttempts[survey.id] : null;
   const orderedQuestions =
     attempt && survey
@@ -64,12 +65,13 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
     setAnswer([]);
     setConfirmation(null);
     setTaskComplete(false);
+    setMembershipLockOpen(false);
     onClose();
   };
 
   if (!survey || !attempt || !question || total === 0) return null;
 
-  if (answeringLocked) {
+  if (membershipLockOpen && answeringLocked) {
     return (
       <Dialog open onOpenChange={(o) => !o && close()}>
         <DialogContent className="max-w-lg rounded-2xl">
@@ -103,6 +105,12 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
 
   const next = () => {
     if (answer.length === 0) return;
+
+    if (answeringLocked) {
+      setMembershipLockOpen(true);
+      return;
+    }
+
     confirmQuestion(survey, attempt.attemptId, question.id, answer);
     setConfirmation({ questionNumber: step + 1, total });
     toast.success("Reward confirmed", {

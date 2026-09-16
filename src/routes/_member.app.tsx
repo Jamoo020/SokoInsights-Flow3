@@ -7,6 +7,7 @@ import { Action, Panel, Pill } from "@/components/ui-kit";
 import {
   CATEGORY_LABELS,
   ksh,
+  MIN_WITHDRAWAL,
   MEMBERSHIP_ACTIVATION_PRICE,
   MEMBERSHIP_MILESTONE,
   SURVEYS,
@@ -102,13 +103,19 @@ function MemberHome() {
                 <Wallet className="size-4" aria-hidden="true" /> Withdraw
               </Action>
             </Link>
-            <Link to="/plans">
-              <Action variant="accent" block>
-                {state.membershipActive
-                  ? "Membership active"
-                  : `Activate Membership — Ksh ${MEMBERSHIP_ACTIVATION_PRICE}`}
-              </Action>
-            </Link>
+            <div className="rounded-xl bg-primary-foreground px-4 py-3 text-center text-ink shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                Minimum withdrawable
+              </p>
+              <p className="mt-1 text-xl font-extrabold">{ksh(MIN_WITHDRAWAL)}</p>
+            </div>
+            {answeringLocked && (
+              <Link to="/plans">
+                <Action variant="accent" block>
+                  Activate Membership — Ksh {MEMBERSHIP_ACTIVATION_PRICE}
+                </Action>
+              </Link>
+            )}
           </div>
         </div>
       </section>

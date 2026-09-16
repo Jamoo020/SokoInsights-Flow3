@@ -146,6 +146,9 @@ function WalletPage() {
           <p className="mt-1 text-sm text-muted-foreground">
             Withdrawable balance: {ksh(balances.withdrawable)}
           </p>
+          <p className="mt-2 text-sm font-medium text-ink">
+            Minimum withdrawable amount: {ksh(MIN_WITHDRAWAL)}
+          </p>
           {membershipInactive && (
             <p className="mt-3 rounded-xl bg-secondary p-3 text-sm font-semibold text-ink">
               Withdrawal locked. Activate your Ksh {MEMBERSHIP_ACTIVATION_PRICE} membership to
