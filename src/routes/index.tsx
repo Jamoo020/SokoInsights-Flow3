@@ -1,8 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BadgeCheck, CreditCard, ShieldCheck, Smartphone, Wallet } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  CreditCard,
+  Mail,
+  MessageCircle,
+  Phone,
+  ShieldCheck,
+  Smartphone,
+  Wallet,
+} from "lucide-react";
 import heroImg from "@/assets/hero-kenya.jpg";
 import { PublicHeader, SiteFooter } from "@/components/public-chrome";
 import { Action, Panel, Pill, SectionHeading } from "@/components/ui-kit";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { CATEGORY_IMAGES, CATEGORY_LABELS, SURVEYS, type CategoryId } from "@/lib/data";
 
 export const Route = createFileRoute("/")({
@@ -66,6 +82,125 @@ const trust = [
     title: "Your data",
     body: "Member information is collected for legitimate platform purposes only.",
     points: ["Account verification", "Topic access", "Reward delivery"],
+  },
+];
+
+const faqGroups = [
+  {
+    title: "Getting Started",
+    questions: [
+      [
+        "What is SokoInsights?",
+        "SokoInsights is a Kenyan consumer research community where you share opinions on products, services and everyday experiences.",
+      ],
+      [
+        "How do I create an account?",
+        "Select Create an account, enter your name, Kenyan phone number, email and password, then sign in to browse available topics.",
+      ],
+      [
+        "How do I find available topics?",
+        "After signing in, visit Home or Categories to browse research topics by category. You can also search the member dashboard.",
+      ],
+      [
+        "Do I have to pay to browse or view topics?",
+        "No. You can browse and view topics without paying. Membership activation is only part of the later answering and withdrawal workflow.",
+      ],
+      [
+        "Can I see all the questions in a topic before answering?",
+        "Yes. Topics remain visible for preview, including after the Ksh 700 milestone. Answering is checked when you submit a response.",
+      ],
+    ],
+  },
+  {
+    title: "Rewards",
+    questions: [
+      [
+        "How much can I earn per completed question?",
+        "Each completed question confirms its configured reward, ranging from Ksh 50 to Ksh 100.",
+      ],
+      [
+        "When do I receive a reward?",
+        "The reward is confirmed when a response is completed and submitted. It then moves through the app's processing and eligibility states.",
+      ],
+      [
+        "Are there correct or incorrect answers?",
+        "No. SokoInsights collects opinions. There are no correct or incorrect answers.",
+      ],
+      [
+        "What happens when I reach Ksh 700 in accumulated earnings?",
+        "Answering locks while membership is inactive. Your accumulated earnings remain recorded, and you can activate the Ksh 250 membership to continue answering.",
+      ],
+      [
+        "Why can I still see questions after reaching Ksh 700?",
+        "Topic discovery stays open so you can preview available research. Only answer submission is locked until membership is active.",
+      ],
+      [
+        "How do I activate membership?",
+        "Choose the membership activation option, review the Ksh 250 charge and confirm the simulated M-PESA payment flow.",
+      ],
+    ],
+  },
+  {
+    title: "Membership",
+    questions: [
+      ["How much does membership activation cost?", "Membership activation costs Ksh 250."],
+      [
+        "What does the Ksh 250 membership activation do?",
+        "It unlocks continued answering after the Ksh 700 accumulated-earnings milestone and allows an eligible balance to become withdrawable.",
+      ],
+      [
+        "Will my accumulated earnings be reset after activating membership?",
+        "No. Activating membership does not reset your accumulated earnings.",
+      ],
+      [
+        "Do I have to pay the Ksh 250 membership activation repeatedly?",
+        "No. The membership status is retained as active after activation in the current application workflow.",
+      ],
+    ],
+  },
+  {
+    title: "Withdrawals",
+    questions: [
+      ["What is the minimum withdrawal amount?", "The minimum withdrawal amount is Ksh 2,500."],
+      [
+        "Can I withdraw more than Ksh 2,500?",
+        "Yes. You may request any amount from Ksh 2,500 up to your available withdrawable balance.",
+      ],
+      [
+        "Can I withdraw my entire available balance?",
+        "Yes, provided the entire amount is at least Ksh 2,500 and does not exceed your available withdrawable balance.",
+      ],
+      ["What payment method is supported?", "The current withdrawal flow supports M-PESA."],
+      [
+        "What is the Ksh 50 withdrawal processing fee?",
+        "It is a separate fee paid after you request a withdrawal and before the request enters Processing.",
+      ],
+      [
+        "Is the Ksh 50 fee deducted from my withdrawal amount?",
+        "No. The fee is separate. A Ksh 4,000 request remains Ksh 4,000; the Ksh 50 fee is not subtracted from it.",
+      ],
+    ],
+  },
+];
+
+const supportOptions = [
+  {
+    icon: MessageCircle,
+    title: "Live Chat",
+    detail: "Mon–Sat, 8am–8pm EAT",
+    body: "A contact option for support questions. Live agent chat is not connected in this prototype.",
+  },
+  {
+    icon: Mail,
+    title: "Email Desk",
+    detail: "Replies within 24 hours",
+    body: "Support email is configurable before launch. No operational support inbox is connected yet.",
+  },
+  {
+    icon: Phone,
+    title: "Phone Support",
+    detail: "+254 7XX XXX XXX",
+    body: "Demo/configurable Kenyan support number for questions about rewards, verification, memberships and withdrawals.",
   },
 ];
 
@@ -286,6 +421,72 @@ function Landing() {
                   View membership
                 </Action>
               </Link>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="faq"
+          className="scroll-mt-20 border-t border-border/70 bg-secondary/30 py-16 lg:py-20"
+        >
+          <div className="mx-auto max-w-4xl px-4 sm:px-6">
+            <SectionHeading
+              eyebrow="Frequently asked questions"
+              title="Clear answers for every step."
+              description="Learn how topics, rewards, membership and withdrawals work before you get started."
+              className="mx-auto text-center"
+            />
+            <Accordion
+              type="single"
+              collapsible
+              className="mt-10 overflow-hidden rounded-2xl border border-border bg-card px-5 shadow-soft sm:px-8"
+            >
+              {faqGroups.map((group) => (
+                <div key={group.title} className="py-3 first:pt-2 last:pb-2">
+                  <h3 className="pb-1 pt-3 text-xs font-bold uppercase tracking-[0.16em] text-accent-foreground">
+                    {group.title}
+                  </h3>
+                  {group.questions.map(([question, answer]) => (
+                    <AccordionItem key={question} value={question} className="border-border/70">
+                      <AccordionTrigger className="text-base font-bold text-ink hover:no-underline">
+                        {question}
+                      </AccordionTrigger>
+                      <AccordionContent className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
+                        {answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </div>
+              ))}
+            </Accordion>
+          </div>
+        </section>
+
+        <section id="support" className="scroll-mt-20 py-16 lg:py-20">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <SectionHeading
+              eyebrow="Need help?"
+              title="Support Center"
+              description="Answers to payout, verification and reward questions"
+            />
+            <div className="mt-10 grid gap-5 md:grid-cols-3">
+              {supportOptions.map((option) => (
+                <Panel
+                  key={option.title}
+                  className="group h-full transition-shadow hover:shadow-lift"
+                >
+                  <span className="grid size-11 place-items-center rounded-xl bg-primary-soft text-primary transition-colors group-hover:bg-accent-soft group-hover:text-accent-foreground">
+                    <option.icon className="size-5" aria-hidden="true" />
+                  </span>
+                  <h3 className="mt-4 text-xl font-extrabold tracking-tight text-ink">
+                    {option.title}
+                  </h3>
+                  <p className="mt-2 text-sm font-bold text-primary">{option.detail}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                    {option.body}
+                  </p>
+                </Panel>
+              ))}
             </div>
           </div>
         </section>
