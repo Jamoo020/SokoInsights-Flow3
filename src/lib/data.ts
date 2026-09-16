@@ -1,8 +1,3 @@
-import telecomImg from "@/assets/cat-telecom.jpg";
-import bankingImg from "@/assets/cat-banking.jpg";
-import researchImg from "@/assets/cat-research.jpg";
-import premiumImg from "@/assets/cat-premium.jpg";
-
 export const QUESTION_REWARD = 50;
 export const QUESTION_REWARDS = [50, 60, 70, 80, 90, 100] as const;
 export const REWARD_PROCESSING_HOURS = 48;
@@ -40,35 +35,66 @@ export type CategoryId =
   | "research"
   | "premium";
 
+const imageUrl = (id: string) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=80`;
+
 export const CATEGORY_IMAGES: Record<CategoryId, string> = {
-  telecom: telecomImg,
-  banking: bankingImg,
-  finance: bankingImg,
-  shopping: researchImg,
-  food: researchImg,
-  technology: premiumImg,
-  transport: researchImg,
-  automotive: premiumImg,
-  healthcare: researchImg,
-  education: researchImg,
-  entertainment: premiumImg,
-  travel: researchImg,
-  ecommerce: researchImg,
-  apps: premiumImg,
-  "consumer-products": researchImg,
-  agriculture: researchImg,
-  housing: premiumImg,
-  insurance: bankingImg,
-  energy: researchImg,
-  beauty: premiumImg,
-  sports: premiumImg,
-  media: researchImg,
-  employment: bankingImg,
-  lifestyle: researchImg,
-  "public-services": bankingImg,
-  research: researchImg,
-  premium: premiumImg,
+  telecom: imageUrl("photo-1516321318423-f06f85e504b3"),
+  banking: imageUrl("photo-1556742049-0cfed4f6a45d"),
+  finance: imageUrl("photo-1554224155-6726b3ff858f"),
+  shopping: imageUrl("photo-1601598851547-4302969d7bfd"),
+  food: imageUrl("photo-1504674900247-0877df9cc836"),
+  technology: imageUrl("photo-1518770660439-4636190af475"),
+  transport: imageUrl("photo-1544620347-c4fd4a3d5957"),
+  automotive: imageUrl("photo-1492144534655-ae79c964c9d7"),
+  healthcare: imageUrl("photo-1505751172876-fa1923c5c528"),
+  education: imageUrl("photo-1523240795612-9a054b0db644"),
+  entertainment: imageUrl("photo-1489599849927-2ee91cede3ba"),
+  travel: imageUrl("photo-1500530855697-b586d89ba3ee"),
+  ecommerce: imageUrl("photo-1556740749-887f6717d7e4"),
+  apps: imageUrl("photo-1512941937669-90a1b58e7e9c"),
+  "consumer-products": imageUrl("photo-1556228578-0d85b1a4d571"),
+  agriculture: imageUrl("photo-1500382017468-9049fed747ef"),
+  housing: imageUrl("photo-1564013799919-ab600027ffc6"),
+  insurance: imageUrl("photo-1450101499163-c8848c66ca85"),
+  energy: imageUrl("photo-1473341304170-971dccb5ac1e"),
+  beauty: imageUrl("photo-1522337360788-8b13dee7a37e"),
+  sports: imageUrl("photo-1461896836934-ffe607ba8211"),
+  media: imageUrl("photo-1504711434969-e33886168f5c"),
+  employment: imageUrl("photo-1521737711867-e3b97375f902"),
+  lifestyle: imageUrl("photo-1492684223066-81342ee5ff30"),
+  "public-services": imageUrl("photo-1515169067868-5387ec356754"),
+  research: imageUrl("photo-1532619675605-1ede6c2ed2b0"),
+  premium: imageUrl("photo-1556761175-b413da4baf72"),
 };
+
+const TOPIC_IMAGES: Array<[string[], string]> = [
+  [["smartphone", "mobile app", "app usage"], imageUrl("photo-1512941937669-90a1b58e7e9c")],
+  [
+    ["ai awareness", "cloud services", "cybersecurity", "online privacy"],
+    imageUrl("photo-1518770660439-4636190af475"),
+  ],
+  [
+    ["internet", "network coverage", "5g", "data usage"],
+    imageUrl("photo-1451187580459-43490279c0fa"),
+  ],
+  [
+    ["restaurant", "fast food", "coffee", "food delivery", "food purchasing"],
+    imageUrl("photo-1517248135467-4c7edcad34c4"),
+  ],
+  [
+    ["supermarket", "shopping", "purchasing", "consumer promotions"],
+    imageUrl("photo-1601598851547-4302969d7bfd"),
+  ],
+  [["delivery", "online shopping"], imageUrl("photo-1586880244406-556ebe35f282")],
+  [
+    ["bank", "banking", "savings", "loan", "credit card", "atm"],
+    imageUrl("photo-1556742049-0cfed4f6a45d"),
+  ],
+  [["farming", "agricultural", "agriculture"], imageUrl("photo-1500382017468-9049fed747ef")],
+  [["housing", "home improvement", "rental"], imageUrl("photo-1564013799919-ab600027ffc6")],
+  [["insurance", "financial planning", "budgeting"], imageUrl("photo-1450101499163-c8848c66ca85")],
+];
 
 export const CATEGORY_LABELS: Record<CategoryId, string> = {
   telecom: "Telecom",
@@ -443,6 +469,11 @@ export const LEGACY_SURVEYS: Survey[] = [
 */
 
 export function surveyImage(survey: Survey) {
+  const title = survey.title.toLowerCase();
+  const topicImage = TOPIC_IMAGES.find(([keywords]) =>
+    keywords.some((keyword) => title.includes(keyword)),
+  );
+  if (topicImage) return topicImage[1];
   return CATEGORY_IMAGES[survey.category];
 }
 
