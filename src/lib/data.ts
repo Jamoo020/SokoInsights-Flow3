@@ -69,6 +69,10 @@ export const CATEGORY_IMAGES: Record<CategoryId, string> = {
 };
 
 const TOPIC_IMAGES: Array<[string[], string]> = [
+  [
+    ["airtime", "mobile money", "m-pesa", "mobile payment"],
+    imageUrl("photo-1511707171634-5f897ff02aa9"),
+  ],
   [["smartphone", "mobile app", "app usage"], imageUrl("photo-1499750310107-5fef28a66643")],
   [
     ["ai awareness", "cloud services", "cybersecurity", "online privacy"],
