@@ -105,10 +105,6 @@ const faqGroups = [
         "Do I have to pay to browse or view topics?",
         "No. You can browse and view topics without paying. Membership activation is only part of the later answering and withdrawal workflow.",
       ],
-      [
-        "Can I see all the questions in a topic before answering?",
-        "Yes. Topics remain visible for preview, including after the Ksh 700 milestone. Answering is checked when you submit a response.",
-      ],
     ],
   },
   {
@@ -127,14 +123,6 @@ const faqGroups = [
         "No. SokoInsights collects opinions. There are no correct or incorrect answers.",
       ],
       [
-        "What happens when I reach Ksh 700 in accumulated earnings?",
-        "Answering locks while membership is inactive. Your accumulated earnings remain recorded, and you can activate the Ksh 250 membership to continue answering.",
-      ],
-      [
-        "Why can I still see questions after reaching Ksh 700?",
-        "Topic discovery stays open so you can preview available research. Only answer submission is locked until membership is active.",
-      ],
-      [
         "How do I activate membership?",
         "Choose the membership activation option, review the Ksh 250 charge and confirm the simulated M-PESA payment flow.",
       ],
@@ -144,10 +132,6 @@ const faqGroups = [
     title: "Membership",
     questions: [
       ["How much does membership activation cost?", "Membership activation costs Ksh 250."],
-      [
-        "What does the Ksh 250 membership activation do?",
-        "It unlocks continued answering after the Ksh 700 accumulated-earnings milestone and allows an eligible balance to become withdrawable.",
-      ],
       [
         "Will my accumulated earnings be reset after activating membership?",
         "No. Activating membership does not reset your accumulated earnings.",
@@ -171,14 +155,6 @@ const faqGroups = [
         "Yes, provided the entire amount is at least Ksh 2,500 and does not exceed your available withdrawable balance.",
       ],
       ["What payment method is supported?", "The current withdrawal flow supports M-PESA."],
-      [
-        "What is the Ksh 50 withdrawal processing fee?",
-        "It is a separate fee paid after you request a withdrawal and before the request enters Processing.",
-      ],
-      [
-        "Is the Ksh 50 fee deducted from my withdrawal amount?",
-        "No. The fee is separate. A Ksh 4,000 request remains Ksh 4,000; the Ksh 50 fee is not subtracted from it.",
-      ],
     ],
   },
 ];
