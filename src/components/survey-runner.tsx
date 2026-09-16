@@ -17,6 +17,7 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
   const { state, completeSurvey, confirmQuestion } = useStore();
   const [step, setStep] = useState(0);
   const [answer, setAnswer] = useState<string[]>([]);
+  const [draftAnswers, setDraftAnswers] = useState<Record<string, string[]>>({});
   const [confirmation, setConfirmation] = useState<{
     questionNumber: number;
     total: number;
@@ -45,16 +46,19 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
     0,
   );
   const questionReward = question?.reward ?? survey?.rewardPerQuestion ?? 20;
+  const alreadySubmitted = question ? attempt?.answeredQuestionIds.includes(question.id) : false;
 
   useEffect(() => {
     if (!survey || !attempt) {
       setStep(0);
       setAnswer([]);
+      setDraftAnswers({});
       setConfirmation(null);
       setTaskComplete(false);
       return;
     }
     setStep(Math.min(attempt.currentQuestionIndex, Math.max(total - 1, 0)));
+    setDraftAnswers(attempt.submittedAnswers);
     setAnswer(attempt.submittedAnswers[question?.id ?? ""] ?? []);
     setConfirmation(null);
     setTaskComplete(attempt.currentQuestionIndex >= total);
@@ -104,7 +108,7 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
   }
 
   const next = () => {
-    if (answer.length === 0) return;
+    if (answer.length === 0 || alreadySubmitted) return;
 
     if (answeringLocked) {
       setMembershipLockOpen(true);
@@ -116,6 +120,14 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
     toast.success("Reward confirmed", {
       description: `+${ksh(questionReward)} added to your earnings.`,
     });
+  };
+
+  const goToQuestion = (nextStep: number) => {
+    const boundedStep = Math.max(0, Math.min(nextStep, total - 1));
+    setStep(boundedStep);
+    const nextQuestion = orderedQuestions[boundedStep];
+    setAnswer(draftAnswers[nextQuestion.id] ?? []);
+    setConfirmation(null);
   };
 
   const nextQuestion = () => {
@@ -209,6 +221,7 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
                     key={option.id}
                     className={cn(
                       "flex cursor-pointer items-center gap-3 rounded-xl border p-4 text-sm font-medium transition-colors",
+                      alreadySubmitted && "cursor-default",
                       answer.includes(option.id)
                         ? "border-primary bg-primary-soft text-ink"
                         : "border-border bg-card hover:bg-secondary",
@@ -219,15 +232,26 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
                       name={`q-${question.id}-${step}`}
                       value={option.id}
                       checked={answer.includes(option.id)}
+                      disabled={alreadySubmitted}
                       onChange={() => {
                         if (question.questionType === "multi_select") {
-                          setAnswer((current) =>
-                            current.includes(option.id)
+                          setAnswer((current) => {
+                            const nextAnswer = current.includes(option.id)
                               ? current.filter((id) => id !== option.id)
-                              : [...current, option.id],
-                          );
+                              : [...current, option.id];
+                            setDraftAnswers((answers) => ({
+                              ...answers,
+                              [question.id]: nextAnswer,
+                            }));
+                            return nextAnswer;
+                          });
                         } else {
-                          setAnswer([option.id]);
+                          const nextAnswer = [option.id];
+                          setAnswer(nextAnswer);
+                          setDraftAnswers((answers) => ({
+                            ...answers,
+                            [question.id]: nextAnswer,
+                          }));
                         }
                       }}
                       className="size-4 accent-[oklch(0.36_0.072_156)]"
@@ -238,13 +262,33 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
               </div>
             </fieldset>
 
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Action variant="outline" block onClick={close}>
-                Exit
-              </Action>
-              <Action block onClick={next} disabled={!answer}>
-                {step + 1 === total ? "Submit answer" : "Submit answer"}
-              </Action>
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <Action
+                  variant="outline"
+                  block
+                  onClick={() => goToQuestion(step - 1)}
+                  disabled={step === 0}
+                >
+                  Previous
+                </Action>
+                <Action
+                  variant="outline"
+                  block
+                  onClick={() => goToQuestion(step + 1)}
+                  disabled={step === total - 1}
+                >
+                  Next question
+                </Action>
+              </div>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Action variant="outline" block onClick={close}>
+                  Exit
+                </Action>
+                <Action block onClick={next} disabled={answer.length === 0 || alreadySubmitted}>
+                  {alreadySubmitted ? "Answer submitted" : "Submit answer"}
+                </Action>
+              </div>
             </div>
           </>
         )}

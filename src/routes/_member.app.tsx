@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BarChart3, CalendarCheck, Clock, Coins, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useEffect } from "react";
 import { SurveyCard } from "@/components/survey-card";
 import { SurveyRunner } from "@/components/survey-runner";
 import { Action, Panel, Pill } from "@/components/ui-kit";
@@ -16,8 +17,10 @@ import {
 } from "@/lib/data";
 import { getRewardBalances, useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { z } from "zod";
 
 export const Route = createFileRoute("/_member/app")({
+  validateSearch: z.object({ topic: z.string().optional() }),
   head: () => ({
     meta: [
       { title: "Dashboard | SokoInsights" },
@@ -36,9 +39,18 @@ const filters = ["All", ...Object.values(CATEGORY_LABELS)] as const;
 
 function MemberHome() {
   const { state, startSurveyAttempt } = useStore();
+  const { topic: selectedTopicId } = Route.useSearch();
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const [search, setSearch] = useState("");
   const [active, setActive] = useState<Survey | null>(null);
+
+  useEffect(() => {
+    if (!selectedTopicId) return;
+    const selectedTopic = SURVEYS.find((topic) => topic.id === selectedTopicId);
+    if (!selectedTopic) return;
+    startSurveyAttempt(selectedTopic);
+    setActive(selectedTopic);
+  }, [selectedTopicId, startSurveyAttempt]);
 
   const firstName = state.user?.name?.split(" ")[0] ?? "jamaa";
   const balances = getRewardBalances(state);

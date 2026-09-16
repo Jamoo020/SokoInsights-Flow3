@@ -84,7 +84,7 @@ function Categories() {
                     <li key={s.id}>
                       <button
                         type="button"
-                        onClick={() => navigate({ to: "/app" })}
+                        onClick={() => navigate({ to: "/app", search: { topic: s.id } })}
                         className="flex w-full items-center gap-3 p-4 text-left transition-colors hover:bg-secondary/60 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                       >
                         <div className="min-w-0 flex-1">
