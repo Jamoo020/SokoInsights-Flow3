@@ -123,7 +123,7 @@ export function WithdrawalActivity() {
       </div>
       <div className="min-w-0">
         <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary">
-          Recent activity · Demo
+          Recent Activity
         </p>
         <p className="text-sm font-extrabold text-ink">{activity.name}</p>
         <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
