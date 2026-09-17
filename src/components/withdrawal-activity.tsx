@@ -1,5 +1,5 @@
-import { Banknote, Clock3 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Banknote, Clock3, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { MIN_WITHDRAWAL, ksh } from "@/lib/data";
 
 type WithdrawalActivity = {
@@ -78,14 +78,18 @@ function shuffledIndexes(length: number) {
 export function WithdrawalActivity() {
   const [activity, setActivity] = useState<WithdrawalActivity | null>(null);
   const [isExiting, setIsExiting] = useState(false);
+  const [dragX, setDragX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const timeoutRef = useRef<number | undefined>(undefined);
+  const scheduleNextRef = useRef<(delay: number) => void>(() => undefined);
+  const pointerRef = useRef<{ id: number; startX: number } | null>(null);
 
   useEffect(() => {
-    let timeoutId: number | undefined;
     let order = shuffledIndexes(withdrawalActivities.length);
     let position = 0;
 
     const scheduleNext = (delay: number) => {
-      timeoutId = window.setTimeout(() => {
+      timeoutRef.current = window.setTimeout(() => {
         const nextActivity = withdrawalActivities[order[position]];
         position += 1;
         if (position === order.length) {
@@ -94,10 +98,11 @@ export function WithdrawalActivity() {
         }
 
         setIsExiting(false);
+        setDragX(0);
         setActivity(nextActivity);
-        timeoutId = window.setTimeout(() => {
+        timeoutRef.current = window.setTimeout(() => {
           setIsExiting(true);
-          timeoutId = window.setTimeout(() => {
+          timeoutRef.current = window.setTimeout(() => {
             setActivity(null);
             scheduleNext(randomDelay());
           }, 450);
@@ -105,18 +110,62 @@ export function WithdrawalActivity() {
       }, delay);
     };
 
+    scheduleNextRef.current = scheduleNext;
     scheduleNext(randomDelay());
     return () => {
-      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+      if (timeoutRef.current !== undefined) window.clearTimeout(timeoutRef.current);
     };
   }, []);
 
   if (!activity || activity.amount < MIN_WITHDRAWAL) return null;
 
+  const dismiss = () => {
+    if (isExiting) return;
+    if (timeoutRef.current !== undefined) window.clearTimeout(timeoutRef.current);
+    setIsDragging(false);
+    setIsExiting(true);
+    timeoutRef.current = window.setTimeout(() => {
+      setActivity(null);
+      setDragX(0);
+      scheduleNextRef.current(randomDelay());
+    }, 300);
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLElement>) => {
+    pointerRef.current = { id: event.pointerId, startX: event.clientX };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setIsDragging(true);
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLElement>) => {
+    if (!pointerRef.current || pointerRef.current.id !== event.pointerId) return;
+    setDragX(event.clientX - pointerRef.current.startX);
+  };
+
+  const handlePointerEnd = (event: React.PointerEvent<HTMLElement>) => {
+    if (!pointerRef.current || pointerRef.current.id !== event.pointerId) return;
+    const distance = event.clientX - pointerRef.current.startX;
+    pointerRef.current = null;
+    setIsDragging(false);
+    if (Math.abs(distance) >= 90) {
+      dismiss();
+    } else {
+      setDragX(0);
+    }
+  };
+
   return (
     <aside
       aria-label="Recent demo withdrawal activity"
       className={`withdrawal-activity ${isExiting ? "withdrawal-activity-exit" : "withdrawal-activity-enter"}`}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerEnd}
+      onPointerCancel={handlePointerEnd}
+      style={{
+        transform: `translate(calc(-50% + ${dragX}px), 0)`,
+        transition: isDragging ? "none" : "transform 220ms ease-out",
+      }}
     >
       <div className="withdrawal-activity-icon" aria-hidden="true">
         <Banknote className="size-5" />
@@ -135,6 +184,14 @@ export function WithdrawalActivity() {
         </p>
         <p className="sr-only">Demo recent activity notification, not a verified transaction.</p>
       </div>
+      <button
+        type="button"
+        aria-label="Dismiss recent activity"
+        className="ml-auto grid size-7 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-secondary hover:text-ink"
+        onClick={dismiss}
+      >
+        <X className="size-4" aria-hidden="true" />
+      </button>
     </aside>
   );
 }

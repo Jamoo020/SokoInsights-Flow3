@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AuthLayout, AuthTabs } from "@/components/auth-layout";
 import { Action, FieldError, inputClass } from "@/components/ui-kit";
+import { SIGN_IN_BONUS, ksh } from "@/lib/data";
 import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/sign-in")({
@@ -53,7 +54,7 @@ function SignIn() {
         toast.error("We couldn't sign you in. Please check your details.");
         return;
       }
-      signIn(
+      const bonusAwarded = signIn(
         known ?? {
           name: form.email.split("@")[0] ?? "Member",
           email: form.email.trim(),
@@ -61,6 +62,11 @@ function SignIn() {
         },
       );
       toast.success("Signed in", { description: "Welcome back to SokoInsights." });
+      if (bonusAwarded) {
+        toast.success("Welcome to SokoInsights!", {
+          description: `${ksh(SIGN_IN_BONUS)} sign-in bonus added to your earnings.`,
+        });
+      }
       let target: string | null = null;
       try {
         target = sessionStorage.getItem("pollyakenya.redirect");

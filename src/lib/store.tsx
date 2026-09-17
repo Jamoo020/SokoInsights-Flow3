@@ -12,6 +12,7 @@ import {
   PROCESSING_FEE,
   QUESTION_REWARD,
   REWARD_PROCESSING_HOURS,
+  SIGN_IN_BONUS,
   MIN_WITHDRAWAL,
   isAnsweringLocked,
   type MembershipStatus,
@@ -69,6 +70,7 @@ export type AppState = {
   completedSurveys: string[];
   transactions: Transaction[];
   confirmedEarnings: number;
+  signInBonusAwarded: boolean;
   rewardRecords: RewardRecord[];
   surveyAttempts: Record<string, SurveyAttempt>;
   withdrawalRequest: WithdrawalRequest | null;
@@ -86,6 +88,7 @@ const initialState: AppState = {
   completedSurveys: [],
   transactions: [],
   confirmedEarnings: 0,
+  signInBonusAwarded: false,
   rewardRecords: [],
   surveyAttempts: {},
   withdrawalRequest: null,
@@ -95,7 +98,7 @@ type Ctx = {
   state: AppState;
   hydrated: boolean;
   signUp: (user: MockUser) => void;
-  signIn: (user: MockUser) => void;
+  signIn: (user: MockUser) => boolean;
   signOut: () => void;
   activateMembership: () => void;
   confirmQuestion: (
@@ -197,7 +200,54 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       state,
       hydrated,
       signUp: (user) => persist({ ...initialState, user }),
-      signIn: (user) => update((prev) => ({ ...prev, user: { ...prev.user, ...user } })),
+      signIn: (user) => {
+        const bonusClaimKey = `${STORAGE_KEY}.sign-in-bonus.${user.email.trim().toLowerCase()}`;
+        let bonusClaimed = state.signInBonusAwarded;
+        try {
+          bonusClaimed = bonusClaimed || localStorage.getItem(bonusClaimKey) === "true";
+          if (!bonusClaimed) localStorage.setItem(bonusClaimKey, "true");
+        } catch {
+          /* storage unavailable */
+        }
+        const shouldAwardBonus = !bonusClaimed;
+        update((prev) => {
+          if (prev.signInBonusAwarded || !shouldAwardBonus) {
+            return { ...prev, user: { ...prev.user, ...user } };
+          }
+          const now = new Date();
+          const reward: RewardRecord = {
+            id: "sign-in-bonus",
+            surveyId: "account",
+            questionId: "sign-in-bonus",
+            amount: SIGN_IN_BONUS,
+            confirmedAt: now.toISOString(),
+            eligibleAt: new Date(
+              now.getTime() + REWARD_PROCESSING_HOURS * 60 * 60 * 1000,
+            ).toISOString(),
+          };
+          const nextConfirmedEarnings = prev.confirmedEarnings + SIGN_IN_BONUS;
+          return {
+            ...prev,
+            user: { ...prev.user, ...user },
+            signInBonusAwarded: true,
+            balance: Math.max(0, nextConfirmedEarnings - prev.withdrawn),
+            confirmedEarnings: nextConfirmedEarnings,
+            lifetimeEarned: prev.lifetimeEarned + SIGN_IN_BONUS,
+            rewardRecords: [...prev.rewardRecords, reward],
+            transactions: [
+              {
+                id: reward.id,
+                label: "Sign-in bonus — Ksh 100",
+                amount: SIGN_IN_BONUS,
+                type: "reward",
+                date: reward.confirmedAt,
+              },
+              ...prev.transactions,
+            ],
+          };
+        });
+        return shouldAwardBonus;
+      },
       signOut: () => update((prev) => ({ ...prev, user: null })),
       activateMembership: () =>
         update((prev) => {

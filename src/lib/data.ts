@@ -4,6 +4,7 @@ export const REWARD_PROCESSING_HOURS = 48;
 export const MEMBERSHIP_ACTIVATION_PRICE = 250;
 export const MEMBERSHIP_MILESTONE = 700;
 export const PROCESSING_FEE = 50;
+export const SIGN_IN_BONUS = 100;
 export const MINIMUM_WITHDRAWAL_AMOUNT = 2500;
 export type MembershipStatus = "inactive" | "active";
 export type CategoryId =

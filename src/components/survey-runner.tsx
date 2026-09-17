@@ -117,9 +117,6 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
 
     confirmQuestion(survey, attempt.attemptId, question.id, answer);
     setConfirmation({ questionNumber: step + 1, total });
-    toast.success("Reward confirmed", {
-      description: `+${ksh(questionReward)} added to your earnings.`,
-    });
   };
 
   const goToQuestion = (nextStep: number) => {
@@ -139,6 +136,12 @@ export function SurveyRunner({ survey, onClose }: { survey: Survey | null; onClo
       return;
     }
     completeSurvey(survey);
+    const completedReward = state.rewardRecords
+      .filter((reward) => reward.attemptId === attempt.attemptId)
+      .reduce((totalAmount, reward) => totalAmount + reward.amount, 0);
+    toast.success("Topic completed!", {
+      description: `Your ${ksh(completedReward)} reward has been added to your earnings.`,
+    });
     setTaskComplete(true);
   };
 
