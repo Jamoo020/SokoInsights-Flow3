@@ -202,7 +202,45 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     () => ({
       state,
       hydrated,
-      signUp: (user) => persist({ ...initialState, user }),
+      signUp: (user) => {
+        const now = new Date();
+        const reward: RewardRecord = {
+          id: "sign-in-bonus",
+          surveyId: "account",
+          questionId: "sign-in-bonus",
+          amount: SIGN_IN_BONUS,
+          confirmedAt: now.toISOString(),
+          eligibleAt: new Date(
+            now.getTime() + REWARD_PROCESSING_HOURS * 60 * 60 * 1000,
+          ).toISOString(),
+        };
+        persist({
+          ...initialState,
+          user,
+          balance: SIGN_IN_BONUS,
+          lifetimeEarned: SIGN_IN_BONUS,
+          confirmedEarnings: SIGN_IN_BONUS,
+          signInBonusAwarded: true,
+          rewardRecords: [reward],
+          transactions: [
+            {
+              id: reward.id,
+              label: "Welcome Bonus — First sign-in",
+              amount: SIGN_IN_BONUS,
+              type: "reward",
+              date: reward.confirmedAt,
+            },
+          ],
+        });
+        try {
+          localStorage.setItem(
+            `${STORAGE_KEY}.sign-in-bonus.${user.email.trim().toLowerCase()}`,
+            "true",
+          );
+        } catch {
+          /* storage unavailable */
+        }
+      },
       signIn: (user) => {
         const bonusClaimKey = `${STORAGE_KEY}.sign-in-bonus.${user.email.trim().toLowerCase()}`;
         let bonusClaimed = state.signInBonusAwarded;

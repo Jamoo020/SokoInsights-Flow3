@@ -57,7 +57,9 @@ function CreateAccount() {
     window.setTimeout(() => {
       signUp({ name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim() });
       setLoading(false);
-      toast.success("Account created", { description: "Welcome to SokoInsights." });
+      toast.success("Account created", {
+        description: "KSh 100 welcome bonus added to your accumulated earnings.",
+      });
       navigate({ to: "/app" });
     }, 900);
   };
