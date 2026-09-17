@@ -130,12 +130,15 @@ function hydrateState(raw: Partial<AppState> & { plan?: string }): AppState {
   const membershipActive = raw.membershipActive ?? raw.plan !== "Free";
   const membershipStatus = raw.membershipStatus ?? (membershipActive ? "active" : "inactive");
   const confirmedEarnings = raw.confirmedEarnings ?? raw.balance ?? raw.lifetimeEarned ?? 0;
+  const signInBonusAwarded =
+    raw.signInBonusAwarded ?? rewardRecords.some((reward) => reward.id === "sign-in-bonus");
   const normalized = {
     ...initialState,
     ...stateWithoutLegacyPlan,
     membershipActive,
     membershipStatus,
     confirmedEarnings,
+    signInBonusAwarded,
     balance: raw.balance ?? confirmedEarnings,
     rewardRecords,
   };
@@ -237,7 +240,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             transactions: [
               {
                 id: reward.id,
-                label: "Sign-in bonus — Ksh 100",
+                label: "Welcome Bonus — First sign-in",
                 amount: SIGN_IN_BONUS,
                 type: "reward",
                 date: reward.confirmedAt,

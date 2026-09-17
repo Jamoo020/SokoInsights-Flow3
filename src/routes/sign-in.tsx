@@ -64,7 +64,7 @@ function SignIn() {
       toast.success("Signed in", { description: "Welcome back to SokoInsights." });
       if (bonusAwarded) {
         toast.success("Welcome to SokoInsights!", {
-          description: `${ksh(SIGN_IN_BONUS)} sign-in bonus added to your earnings.`,
+          description: `${ksh(SIGN_IN_BONUS)} welcome bonus added to your accumulated earnings.`,
         });
       }
       let target: string | null = null;
