@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle2, CreditCard, Loader2, Smartphone, XCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2, Smartphone, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -12,14 +12,11 @@ import { Action, FieldError, inputClass } from "@/components/ui-kit";
 import { isKenyanPhone, ksh, MEMBERSHIP_ACTIVATION_PRICE } from "@/lib/data";
 import { useStore } from "@/lib/store";
 
-type PaymentMethod = "payor" | "mpesa";
 type Phase = "idle" | "loading" | "waiting" | "success" | "failed" | "cancelled";
 
 export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { state, activateMembership } = useStore();
   const [phone, setPhone] = useState(state.user?.phone ?? "");
-  const [apiKey, setApiKey] = useState("");
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("payor");
   const [error, setError] = useState<string>();
   const [phase, setPhase] = useState<Phase>("idle");
 
@@ -28,35 +25,26 @@ export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: (
       setPhase("idle");
       setError(undefined);
       setPhone(state.user?.phone ?? "");
-      setApiKey("");
-      setSelectedMethod("payor");
     }
   }, [open, state.user?.phone]);
 
   if (!open) return null;
 
   const busy = phase === "loading" || phase === "waiting";
-  const activeLabel = selectedMethod === "payor" ? "Payor" : "M-PESA";
 
   const start = () => {
-    if (selectedMethod === "mpesa") {
-      if (!isKenyanPhone(phone)) {
-        setError("Enter a valid Kenyan phone number, e.g. 0712 345 678.");
-        return;
-      }
-    } else if (!apiKey.trim()) {
-      setError("Enter your Payor API key to use this as your payment method.");
+    if (!isKenyanPhone(phone)) {
+      setError("Enter a valid Kenyan phone number, e.g. 0712 345 678.");
       return;
     }
-
     setError(undefined);
     setPhase("loading");
     window.setTimeout(() => setPhase("waiting"), 1200);
     window.setTimeout(() => {
       setPhase("success");
       activateMembership();
-      toast.success("Payment method set", {
-        description: `Using ${activeLabel} for your membership activation.`,
+      toast.success("Membership activated", {
+        description: "Withdrawals are now unlocked for eligible rewards.",
       });
     }, 3400);
   };
@@ -66,36 +54,12 @@ export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: (
       <DialogContent className="max-w-md rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-extrabold tracking-tight text-ink">
-            Choose payment method
+            Activate membership
           </DialogTitle>
           <DialogDescription>
-            Use {activeLabel} as your payment method for the Ksh {MEMBERSHIP_ACTIVATION_PRICE} membership activation.
+            An M-PESA payment prompt will be simulated for this prototype. No real payment is taken.
           </DialogDescription>
         </DialogHeader>
-
-        <div className="grid grid-cols-2 gap-2">
-          {[
-            { id: "payor", label: "Payor", icon: <CreditCard className="size-4" /> },
-            { id: "mpesa", label: "M-PESA", icon: <Smartphone className="size-4" /> },
-          ].map((method) => {
-            const active = selectedMethod === method.id;
-            return (
-              <button
-                key={method.id}
-                type="button"
-                onClick={() => setSelectedMethod(method.id as PaymentMethod)}
-                className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition ${
-                  active
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border bg-secondary text-muted-foreground hover:bg-secondary/80"
-                }`}
-              >
-                {method.icon}
-                {method.label}
-              </button>
-            );
-          })}
-        </div>
 
         <div className="rounded-xl border border-border bg-secondary/50 p-4 text-sm">
           <div className="flex items-center justify-between">
@@ -108,73 +72,48 @@ export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: (
           </div>
           <div className="mt-2 flex items-center justify-between">
             <span className="text-muted-foreground">Payment</span>
-            <span className="font-bold text-ink">{activeLabel}</span>
+            <span className="font-bold text-ink">One-time activation</span>
           </div>
         </div>
 
         {phase === "idle" && (
           <div>
-            {selectedMethod === "payor" ? (
-              <>
-                <label htmlFor="payor-key" className="text-sm font-semibold text-ink">
-                  Payor API key
-                </label>
-                <input
-                  id="payor-key"
-                  type="text"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="Enter your Payor API key"
-                  aria-invalid={Boolean(error)}
-                  aria-describedby={error ? "payor-key-error" : undefined}
-                  className={`${inputClass} mt-1.5`}
-                />
-                <FieldError id="payor-key-error">{error}</FieldError>
-              </>
-            ) : (
-              <>
-                <label htmlFor="sub-phone" className="text-sm font-semibold text-ink">
-                  M-PESA phone number
-                </label>
-                <input
-                  id="sub-phone"
-                  type="tel"
-                  inputMode="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="07XX XXX XXX"
-                  aria-invalid={Boolean(error)}
-                  aria-describedby={error ? "sub-phone-error" : undefined}
-                  className={`${inputClass} mt-1.5`}
-                />
-                <FieldError id="sub-phone-error">{error}</FieldError>
-              </>
-            )}
+            <label htmlFor="sub-phone" className="text-sm font-semibold text-ink">
+              M-PESA phone number
+            </label>
+            <input
+              id="sub-phone"
+              type="tel"
+              inputMode="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="07XX XXX XXX"
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? "sub-phone-error" : undefined}
+              className={`${inputClass} mt-1.5`}
+            />
+            <FieldError id="sub-phone-error">{error}</FieldError>
           </div>
         )}
 
         {phase === "loading" && (
           <StatusRow
             icon={<Loader2 className="size-5 animate-spin" />}
-            title={selectedMethod === "payor" ? "Validating Payor key…" : "Sending STK prompt…"}
+            title="Sending STK prompt…"
           />
         )}
         {phase === "waiting" && (
           <StatusRow
             icon={<Smartphone className="size-5" />}
-            title={
-              selectedMethod === "payor"
-                ? "Payor authorization is ready. Confirm the payment method."
-                : "Check your phone and approve the M-PESA prompt."
-            }
-            note="Simulated flow — nothing is charged."
+            title="Check your phone and approve the M-PESA prompt."
+            note="Simulated prompt — nothing is charged."
           />
         )}
         {phase === "success" && (
           <StatusRow
             tone="success"
             icon={<CheckCircle2 className="size-5" />}
-            title={`Payment successful with ${activeLabel}. Membership activated.`}
+            title="Payment successful. Membership activated."
           />
         )}
         {phase === "failed" && (
@@ -199,7 +138,7 @@ export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: (
                 Cancel
               </Action>
               <Action block onClick={start}>
-                {selectedMethod === "payor" ? "Use Payor" : "Send STK Push"}
+                Send STK Push
               </Action>
             </>
           )}
