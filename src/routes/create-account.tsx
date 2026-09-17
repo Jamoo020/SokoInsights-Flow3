@@ -57,10 +57,10 @@ function CreateAccount() {
     window.setTimeout(() => {
       signUp({ name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim() });
       setLoading(false);
-      toast.success("Account created", {
-        description: "KSh 100 welcome bonus added to your accumulated earnings.",
+      toast.success("Account successfully created", {
+        description: "Sign in to receive your KSh 100 welcome bonus.",
       });
-      navigate({ to: "/app" });
+      navigate({ to: "/sign-in" });
     }, 900);
   };
 

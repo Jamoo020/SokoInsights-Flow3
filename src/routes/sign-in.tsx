@@ -48,7 +48,7 @@ function SignIn() {
     setLoading(true);
     window.setTimeout(() => {
       setLoading(false);
-      const known = state.user;
+      const known = state.account ?? state.user;
       if (known && known.email.toLowerCase() !== form.email.trim().toLowerCase()) {
         setErrors({ form: "Invalid credentials. Check your email and password and try again." });
         toast.error("We couldn't sign you in. Please check your details.");

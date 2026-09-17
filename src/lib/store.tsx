@@ -62,6 +62,7 @@ export type SurveyAttempt = SurveyPresentation & {
 
 export type AppState = {
   user: MockUser | null;
+  account: MockUser | null;
   membershipActive: boolean;
   membershipStatus: MembershipStatus;
   balance: number;
@@ -80,6 +81,7 @@ const STORAGE_KEY = "pollyakenya.state.v1";
 
 const initialState: AppState = {
   user: null,
+  account: null,
   membershipActive: false,
   membershipStatus: "inactive",
   balance: 0,
@@ -132,6 +134,7 @@ function hydrateState(raw: Partial<AppState> & { plan?: string }): AppState {
   const confirmedEarnings = raw.confirmedEarnings ?? raw.balance ?? raw.lifetimeEarned ?? 0;
   const signInBonusAwarded =
     raw.signInBonusAwarded ?? rewardRecords.some((reward) => reward.id === "sign-in-bonus");
+  const account = raw.account ?? raw.user ?? null;
   const normalized = {
     ...initialState,
     ...stateWithoutLegacyPlan,
@@ -139,6 +142,7 @@ function hydrateState(raw: Partial<AppState> & { plan?: string }): AppState {
     membershipStatus,
     confirmedEarnings,
     signInBonusAwarded,
+    account,
     balance: raw.balance ?? confirmedEarnings,
     rewardRecords,
   };
@@ -202,45 +206,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     () => ({
       state,
       hydrated,
-      signUp: (user) => {
-        const now = new Date();
-        const reward: RewardRecord = {
-          id: "sign-in-bonus",
-          surveyId: "account",
-          questionId: "sign-in-bonus",
-          amount: SIGN_IN_BONUS,
-          confirmedAt: now.toISOString(),
-          eligibleAt: new Date(
-            now.getTime() + REWARD_PROCESSING_HOURS * 60 * 60 * 1000,
-          ).toISOString(),
-        };
-        persist({
-          ...initialState,
-          user,
-          balance: SIGN_IN_BONUS,
-          lifetimeEarned: SIGN_IN_BONUS,
-          confirmedEarnings: SIGN_IN_BONUS,
-          signInBonusAwarded: true,
-          rewardRecords: [reward],
-          transactions: [
-            {
-              id: reward.id,
-              label: "Welcome Bonus — First sign-in",
-              amount: SIGN_IN_BONUS,
-              type: "reward",
-              date: reward.confirmedAt,
-            },
-          ],
-        });
-        try {
-          localStorage.setItem(
-            `${STORAGE_KEY}.sign-in-bonus.${user.email.trim().toLowerCase()}`,
-            "true",
-          );
-        } catch {
-          /* storage unavailable */
-        }
-      },
+      signUp: (account) => persist({ ...initialState, account, user: null }),
       signIn: (user) => {
         const bonusClaimKey = `${STORAGE_KEY}.sign-in-bonus.${user.email.trim().toLowerCase()}`;
         let bonusClaimed = state.signInBonusAwarded;
@@ -252,8 +218,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }
         const shouldAwardBonus = !bonusClaimed;
         update((prev) => {
+          const account = prev.account ?? prev.user ?? user;
+          const signedInUser = { ...account, ...user };
           if (prev.signInBonusAwarded || !shouldAwardBonus) {
-            return { ...prev, user: { ...prev.user, ...user } };
+            return { ...prev, account, user: signedInUser };
           }
           const now = new Date();
           const reward: RewardRecord = {
@@ -269,7 +237,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           const nextConfirmedEarnings = prev.confirmedEarnings + SIGN_IN_BONUS;
           return {
             ...prev,
-            user: { ...prev.user, ...user },
+            account,
+            user: signedInUser,
             signInBonusAwarded: true,
             balance: Math.max(0, nextConfirmedEarnings - prev.withdrawn),
             confirmedEarnings: nextConfirmedEarnings,
