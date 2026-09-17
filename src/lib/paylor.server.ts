@@ -26,6 +26,15 @@ function getPaylorApiKey() {
   return apiKey;
 }
 
+function getPaylorChannelId() {
+  const runtime = globalThis as typeof globalThis & {
+    process?: { env?: Record<string, string | undefined> };
+  };
+  const channelId = runtime.process?.env?.PAYLOR_CHANNEL_ID;
+  if (!channelId) throw new Error("PAYLOR_CHANNEL_ID is not configured on the server.");
+  return channelId;
+}
+
 function normalizePhone(phone: string) {
   const digits = phone.replace(/\D/g, "");
   if (digits.startsWith("0")) return `254${digits.slice(1)}`;
@@ -70,6 +79,7 @@ export const startPaylorPayment = createServerFn({ method: "POST" })
         phone,
         amount: paymentAmount(data.purpose),
         reference: data.reference,
+        channelId: getPaylorChannelId(),
         description:
           data.purpose === "membership"
             ? "SokoInsights membership activation"
