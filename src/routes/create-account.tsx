@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -29,7 +29,6 @@ export const Route = createFileRoute("/create-account")({
 type Errors = Partial<Record<"name" | "phone" | "email" | "password", string>>;
 
 function CreateAccount() {
-  const navigate = useNavigate();
   const { signUp } = useStore();
   const [form, setForm] = useState({ name: "", phone: "", email: "", password: "" });
   const [errors, setErrors] = useState<Errors>({});
@@ -60,7 +59,7 @@ function CreateAccount() {
       toast.success("Account successfully created", {
         description: "Sign in to receive your KSh 100 welcome bonus.",
       });
-      navigate({ to: "/sign-in" });
+      window.location.assign("/sign-in");
     }, 900);
   };
 
