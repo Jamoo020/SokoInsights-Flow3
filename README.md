@@ -21,6 +21,19 @@ npm i
 npm run dev
 ```
 
+## Paylor payments
+
+Set the server-side Paylor API key before starting the app. In PowerShell:
+
+```powershell
+$env:PAYLOR_API_KEY = "your_api_key_here"
+npm run dev
+```
+
+The membership activation and withdrawal processing-fee flows use Paylor M-PESA STK Push and
+confirm the transaction status before updating the local member state. Keep the API key on the
+server and grant the key the `payments:create` and `transactions:read` scopes.
+
 ## Built with
 
 - TanStack Start

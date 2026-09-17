@@ -111,9 +111,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-20 pt-8 sm:px-6">{children}</main>
       <footer className="border-t border-border bg-secondary/50 px-4 py-8 sm:px-6">
         <p className="mx-auto max-w-6xl text-xs leading-relaxed text-muted-foreground">
-          Each completed opinion response confirms its configured reward. Payment and payout flows in
-          this prototype are simulated. M-PESA is a trademark of Safaricom PLC. SokoInsights is an
-          independent consumer research community and is not affiliated with the brands mentioned.
+          Each completed opinion response confirms its configured reward. Payment and payout flows
+          use Paylor for M-PESA collection. M-PESA is a trademark of Safaricom PLC. SokoInsights is
+          an independent consumer research community and is not affiliated with the brands
+          mentioned.
         </p>
       </footer>
     </div>

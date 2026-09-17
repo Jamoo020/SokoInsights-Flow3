@@ -1,5 +1,5 @@
 import { AlertCircle, CheckCircle2, Loader2, Smartphone, XCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Action, FieldError, inputClass } from "@/components/ui-kit";
 import { isKenyanPhone, ksh, MEMBERSHIP_ACTIVATION_PRICE } from "@/lib/data";
+import { waitForPaylorPayment } from "@/lib/paylor";
 import { useStore } from "@/lib/store";
 
 type Phase = "idle" | "loading" | "waiting" | "success" | "failed" | "cancelled";
@@ -19,12 +20,14 @@ export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: (
   const [phone, setPhone] = useState(state.user?.phone ?? "");
   const [error, setError] = useState<string>();
   const [phase, setPhase] = useState<Phase>("idle");
+  const paymentCancelled = useRef(false);
 
   useEffect(() => {
     if (open) {
       setPhase("idle");
       setError(undefined);
       setPhone(state.user?.phone ?? "");
+      paymentCancelled.current = false;
     }
   }, [open, state.user?.phone]);
 
@@ -32,21 +35,30 @@ export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: (
 
   const busy = phase === "loading" || phase === "waiting";
 
-  const start = () => {
+  const start = async () => {
     if (!isKenyanPhone(phone)) {
       setError("Enter a valid Kenyan phone number, e.g. 0712 345 678.");
       return;
     }
     setError(undefined);
+    paymentCancelled.current = false;
     setPhase("loading");
-    window.setTimeout(() => setPhase("waiting"), 1200);
-    window.setTimeout(() => {
+    try {
+      setPhase("waiting");
+      await waitForPaylorPayment(phone, "membership");
+      if (paymentCancelled.current) return;
       setPhase("success");
       activateMembership();
       toast.success("Membership activated", {
         description: "Withdrawals are now unlocked for eligible rewards.",
       });
-    }, 3400);
+    } catch (paymentError) {
+      if (paymentCancelled.current) return;
+      setPhase("failed");
+      toast.error(
+        paymentError instanceof Error ? paymentError.message : "Payment could not be completed.",
+      );
+    }
   };
 
   return (
@@ -57,7 +69,7 @@ export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: (
             Activate membership
           </DialogTitle>
           <DialogDescription>
-            An M-PESA payment prompt will be simulated for this prototype. No real payment is taken.
+            An M-PESA prompt will be sent to your phone. Approve it with your M-PESA PIN.
           </DialogDescription>
         </DialogHeader>
 
@@ -106,7 +118,7 @@ export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: (
           <StatusRow
             icon={<Smartphone className="size-5" />}
             title="Check your phone and approve the M-PESA prompt."
-            note="Simulated prompt — nothing is charged."
+            note="The payment is confirmed after Paylor reports it as completed."
           />
         )}
         {phase === "success" && (
@@ -147,6 +159,7 @@ export function SubscriptionModal({ open, onClose }: { open: boolean; onClose: (
               variant="outline"
               block
               onClick={() => {
+                paymentCancelled.current = true;
                 setPhase("cancelled");
                 toast.info("Payment cancelled");
               }}

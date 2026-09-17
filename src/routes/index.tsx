@@ -124,7 +124,7 @@ const faqGroups = [
       ],
       [
         "How do I activate membership?",
-        "Choose the membership activation option, review the Ksh 250 charge and confirm the simulated M-PESA payment flow.",
+        "Choose the membership activation option, review the Ksh 250 charge and confirm the M-PESA payment prompt.",
       ],
     ],
   },

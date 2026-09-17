@@ -12,6 +12,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Action, EmptyState, FieldError, inputClass, Panel } from "@/components/ui-kit";
 import { isKenyanPhone, ksh, MEMBERSHIP_ACTIVATION_PRICE, MIN_WITHDRAWAL } from "@/lib/data";
+import { waitForPaylorPayment } from "@/lib/paylor";
 import { getRewardBalances, useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/_member/wallet")({
@@ -20,8 +21,7 @@ export const Route = createFileRoute("/_member/wallet")({
       { title: "Wallet | SokoInsights" },
       {
         name: "description",
-        content:
-          "Track your SokoInsights balance and request a simulated M-PESA withdrawal from Ksh 2,500.",
+        content: "Track your SokoInsights balance and request an M-PESA withdrawal from Ksh 2,500.",
       },
       { property: "og:title", content: "Wallet | SokoInsights" },
       {
@@ -63,15 +63,12 @@ function WalletPage() {
     if (Object.keys(next).length) return;
 
     setPhase("loading");
-    window.setTimeout(() => setPhase("waiting"), 1200);
-    window.setTimeout(() => {
-      requestWithdrawal(value);
-      setPhase("success");
-      setAmount("");
-      toast.success("Withdrawal requested", {
-        description: `Withdrawal amount: ${ksh(value)}. Pay the separate Ksh 50 processing fee to continue.`,
-      });
-    }, 3400);
+    requestWithdrawal(value);
+    setPhase("success");
+    setAmount("");
+    toast.success("Withdrawal requested", {
+      description: `Withdrawal amount: ${ksh(value)}. Pay the separate Ksh 50 processing fee to continue.`,
+    });
   };
 
   if (withdrawalRequest?.status === "processing") {
@@ -182,14 +179,23 @@ function WalletPage() {
                 block
                 onClick={() => {
                   setPhase("loading");
-                  window.setTimeout(() => setPhase("waiting"), 1200);
-                  window.setTimeout(() => {
-                    payWithdrawalProcessingFee();
-                    setPhase("success");
-                    toast.success("Processing fee paid", {
-                      description: `Withdrawal remains ${ksh(withdrawalRequest.withdrawalAmount)} and is now in processing.`,
+                  setPhase("waiting");
+                  void waitForPaylorPayment(phone, "processing_fee")
+                    .then(() => {
+                      payWithdrawalProcessingFee();
+                      setPhase("success");
+                      toast.success("Processing fee paid", {
+                        description: `Withdrawal remains ${ksh(withdrawalRequest.withdrawalAmount)} and is now in processing.`,
+                      });
+                    })
+                    .catch((paymentError) => {
+                      setPhase("failed");
+                      toast.error(
+                        paymentError instanceof Error
+                          ? paymentError.message
+                          : "Payment could not be completed.",
+                      );
                     });
-                  }, 3400);
                 }}
               >
                 Pay Ksh 50 Processing Fee

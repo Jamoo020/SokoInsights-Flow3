@@ -74,8 +74,8 @@ function Plans() {
       </section>
 
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Payments in this prototype are simulated — no M-PESA transaction is initiated and no money
-        is taken.
+        Payments are processed securely through Paylor. An M-PESA prompt will be sent to the phone
+        number you confirm.
       </p>
 
       <SubscriptionModal open={selected} onClose={() => setSelected(false)} />
